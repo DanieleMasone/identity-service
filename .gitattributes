@@ -1,0 +1,43 @@
+# -------------------------
+# Default behavior
+# -------------------------
+* text=auto
+
+# -------------------------
+# Java source code
+# -------------------------
+*.java text eol=lf
+
+# Maven wrapper
+mvnw text eol=lf
+mvnw.cmd text eol=crlf
+
+# -------------------------
+# Config / OpenAPI / YAML
+# -------------------------
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.xml text eol=lf
+
+# -------------------------
+# Shell scripts (Linux/Mac)
+# -------------------------
+*.sh text eol=lf
+
+# -------------------------
+# Windows batch files
+# -------------------------
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# -------------------------
+# Documentation
+# -------------------------
+*.md text eol=lf
+
+# -------------------------
+# Gradle/Maven wrapper safety
+# -------------------------
+gradlew text eol=lf
+gradlew.bat text eol=crlf
