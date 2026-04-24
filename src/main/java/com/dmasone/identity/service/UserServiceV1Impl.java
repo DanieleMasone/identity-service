@@ -2,6 +2,7 @@ package com.dmasone.identity.service;
 
 import com.dmasone.identity.api.dto.CreateUserRequestV1;
 import com.dmasone.identity.api.dto.UserResponseV1;
+import com.dmasone.identity.api.mapper.UserMapper;
 import com.dmasone.identity.domain.model.User;
 import com.dmasone.identity.domain.model.UserStatus;
 import com.dmasone.identity.domain.repository.UserRepository;
@@ -18,6 +19,7 @@ import java.util.UUID;
 public class UserServiceV1Impl implements UserServiceV1 {
 
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public UserResponseV1 createUser(CreateUserRequestV1 request) {
@@ -26,33 +28,33 @@ public class UserServiceV1Impl implements UserServiceV1 {
             throw new EmailAlreadyExistsException("Email already exists");
         }
 
-        User user = User.builder()
-                .email(request.getEmail())
-                .passwordHash(hash(request.getPassword()))
-                .status(UserStatus.ACTIVE)
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
+        User user = userMapper.toEntity(request);
+
+        user.setPasswordHash(hash(request.getPassword()));
+        user.setStatus(UserStatus.ACTIVE);
+        user.setCreatedAt(Instant.now());
+        user.setUpdatedAt(Instant.now());
 
         User saved = userRepository.save(user);
 
-        return mapToResponse(saved);
+        return userMapper.toV1(saved);
     }
 
     @Override
     public UserResponseV1 getUserById(String id) {
+
         User user = userRepository.findById(parseUUID(id))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        return mapToResponse(user);
+        return userMapper.toV1(user);
     }
 
     @Override
     public void deleteUser(String id) {
+
         User user = userRepository.findById(parseUUID(id))
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        // soft delete
         user.setStatus(UserStatus.INACTIVE);
         user.setUpdatedAt(Instant.now());
 
@@ -67,15 +69,6 @@ public class UserServiceV1Impl implements UserServiceV1 {
         } catch (Exception e) {
             throw new UserNotFoundException("Invalid user ID");
         }
-    }
-
-    private UserResponseV1 mapToResponse(User user) {
-        return UserResponseV1.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .status(user.getStatus().name())
-                .createdAt(user.getCreatedAt())
-                .build();
     }
 
     private String hash(String password) {
