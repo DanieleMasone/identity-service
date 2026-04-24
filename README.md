@@ -1,5 +1,6 @@
 # Identity Service API (API-First, Contract-Driven)
 
+![CI](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ## Overview
