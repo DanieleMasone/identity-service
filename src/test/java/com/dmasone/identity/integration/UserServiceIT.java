@@ -1,7 +1,7 @@
 package com.dmasone.identity.integration;
 
-import com.dmasone.identity.api.dto.CreateUserRequestV1;
-import com.dmasone.identity.api.dto.UserResponseV1;
+import com.dmasone.identity.api.generated.model.CreateUserRequestV1;
+import com.dmasone.identity.api.generated.model.UserResponseV1;
 import com.dmasone.identity.domain.repository.UserRepository;
 import com.dmasone.identity.service.UserServiceV1;
 import org.junit.jupiter.api.Test;
@@ -9,9 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.postgresql.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -19,8 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 class UserServiceIT {
 
+    private static final DockerImageName POSTGRES_IMAGE = DockerImageName.parse("postgres:16");
+
     @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
+    static PostgreSQLContainer postgres = new PostgreSQLContainer(POSTGRES_IMAGE)
             .withDatabaseName("identity_db")
             .withUsername("postgres")
             .withPassword("postgres");
@@ -43,7 +46,7 @@ class UserServiceIT {
         // CREATE
         CreateUserRequestV1 request = new CreateUserRequestV1();
         request.setEmail("test@test.com");
-        request.setPassword("Dani");
+        request.setPassword("password123");
 
         UserResponseV1 created = userService.createUser(request);
 
@@ -51,7 +54,7 @@ class UserServiceIT {
         assertThat(created.getEmail()).isEqualTo("test@test.com");
 
         // READ
-        UserResponseV1 found = userService.getUserById(created.getId().toString());
+        UserResponseV1 found = userService.getUserById(created.getId());
 
         assertThat(found.getEmail()).isEqualTo("test@test.com");
 

@@ -9,8 +9,10 @@ servers:
   - url: http://localhost:8080/api
 
 tags:
-  - name: Users
-    description: User management
+  - name: UsersV1
+    description: User management v1
+  - name: UsersV2
+    description: User management v2
 
 paths:
 
@@ -20,7 +22,7 @@ paths:
 
   /v1/users:
     post:
-      tags: [Users]
+      tags: [UsersV1]
       summary: Create a new user (v1)
       operationId: createUserV1
       requestBody:
@@ -43,7 +45,7 @@ paths:
 
   /v1/users/{id}:
     get:
-      tags: [Users]
+      tags: [UsersV1]
       summary: Get user by ID (v1)
       operationId: getUserByIdV1
       parameters:
@@ -59,7 +61,7 @@ paths:
           $ref: '#/components/responses/NotFound'
 
     delete:
-      tags: [Users]
+      tags: [UsersV1]
       summary: Delete user (soft delete) (v1)
       operationId: deleteUserV1
       parameters:
@@ -76,7 +78,7 @@ paths:
 
   /v2/users:
     post:
-      tags: [Users]
+      tags: [UsersV2]
       summary: Create a new user (v2)
       operationId: createUserV2
       requestBody:
@@ -99,7 +101,7 @@ paths:
 
   /v2/users/{id}:
     get:
-      tags: [Users]
+      tags: [UsersV2]
       summary: Get user by ID (v2)
       operationId: getUserByIdV2
       parameters:
@@ -115,7 +117,7 @@ paths:
           $ref: '#/components/responses/NotFound'
 
     patch:
-      tags: [Users]
+      tags: [UsersV2]
       summary: Update user partially (v2)
       operationId: updateUserV2
       parameters:
@@ -174,6 +176,7 @@ components:
         email:
           type: string
           format: email
+          minLength: 1
         password:
           type: string
           minLength: 8
@@ -203,6 +206,7 @@ components:
         email:
           type: string
           format: email
+          minLength: 1
         password:
           type: string
           minLength: 8
@@ -218,8 +222,10 @@ components:
       properties:
         firstName:
           type: string
+          minLength: 1
         lastName:
           type: string
+          minLength: 1
         status:
           $ref: '#/components/schemas/UserStatus'
 

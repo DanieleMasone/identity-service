@@ -1,96 +1,135 @@
 package com.dmasone.identity.service;
 
-import com.dmasone.identity.api.dto.CreateUserRequestV1;
-import com.dmasone.identity.api.dto.UserResponseV1;
+import com.dmasone.identity.api.generated.model.CreateUserRequestV1;
+import com.dmasone.identity.api.generated.model.UserResponseV1;
+import com.dmasone.identity.api.generated.model.UserStatus;
+import com.dmasone.identity.api.mapper.UserMapper;
 import com.dmasone.identity.domain.model.User;
 import com.dmasone.identity.domain.repository.UserRepository;
 import com.dmasone.identity.infrastructure.exception.EmailAlreadyExistsException;
 import com.dmasone.identity.infrastructure.exception.UserNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.assertj.core.api.Assertions.*;
+import java.util.Optional;
+import java.util.UUID;
 
-@SpringBootTest
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 class UserServiceV1ImplTest {
 
-    @Autowired
+    @Mock
+    private UserRepository userRepository;
+
+    private PasswordEncoder passwordEncoder;
     private UserServiceV1 userService;
 
-    @Autowired
-    private UserRepository userRepository;
+    @BeforeEach
+    void setUp() {
+        passwordEncoder = new BCryptPasswordEncoder(4);
+        userService = new UserServiceV1Impl(
+                userRepository,
+                Mappers.getMapper(UserMapper.class),
+                passwordEncoder
+        );
+    }
 
     @Test
     void shouldCreateUser() {
+        CreateUserRequestV1 request = new CreateUserRequestV1("test@mail.com", "password123");
 
-        CreateUserRequestV1 request = new CreateUserRequestV1(
-                "test@mail.com",
-                "password123"
-        );
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+            User user = invocation.getArgument(0);
+            user.setId(UUID.randomUUID());
+            return user;
+        });
 
         UserResponseV1 response = userService.createUser(request);
 
         assertThat(response).isNotNull();
         assertThat(response.getEmail()).isEqualTo("test@mail.com");
+        assertThat(response.getStatus()).isEqualTo(UserStatus.ACTIVE);
 
-        User saved = userRepository.findById(response.getId()).orElseThrow();
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
 
-        assertThat(saved.getEmail()).isEqualTo("test@mail.com");
-        assertThat(saved.getPasswordHash()).isNotBlank();
+        User saved = userCaptor.getValue();
+        assertThat(saved.getCreatedAt()).isNotNull();
+        assertThat(saved.getUpdatedAt()).isNotNull();
+        assertThat(saved.getPasswordHash()).isNotEqualTo("password123");
+        assertThat(passwordEncoder.matches("password123", saved.getPasswordHash())).isTrue();
     }
 
     @Test
     void shouldNotAllowDuplicateEmail() {
-
-        CreateUserRequestV1 request = new CreateUserRequestV1(
-                "duplicate@mail.com",
-                "password123"
-        );
-
-        userService.createUser(request);
+        CreateUserRequestV1 request = new CreateUserRequestV1("duplicate@mail.com", "password123");
+        when(userRepository.existsByEmail(request.getEmail())).thenReturn(true);
 
         assertThatThrownBy(() -> userService.createUser(request))
-                .isInstanceOf(EmailAlreadyExistsException.class);
+                .isInstanceOf(EmailAlreadyExistsException.class)
+                .hasMessageContaining("Email already exists");
+
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
     void shouldGetUserById() {
+        UUID id = UUID.randomUUID();
+        User user = User.builder()
+                .id(id)
+                .email("find@mail.com")
+                .status(com.dmasone.identity.domain.model.UserStatus.ACTIVE)
+                .createdAt(java.time.Instant.now())
+                .updatedAt(java.time.Instant.now())
+                .build();
 
-        CreateUserRequestV1 request = new CreateUserRequestV1(
-                "find@mail.com",
-                "password123"
-        );
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
 
-        UserResponseV1 created = userService.createUser(request);
+        UserResponseV1 found = userService.getUserById(id);
 
-        UserResponseV1 found = userService.getUserById(created.getId().toString());
-
+        assertThat(found.getId()).isEqualTo(id);
         assertThat(found.getEmail()).isEqualTo("find@mail.com");
     }
 
     @Test
     void shouldFailWhenUserNotFound() {
+        UUID id = UUID.fromString("00000000-0000-0000-0000-000000000000");
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() ->
-                userService.getUserById("00000000-0000-0000-0000-000000000000")
-        ).isInstanceOf(UserNotFoundException.class);
+        assertThatThrownBy(() -> userService.getUserById(id))
+                .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
     void shouldSoftDeleteUser() {
+        UUID id = UUID.randomUUID();
+        User user = User.builder()
+                .id(id)
+                .email("delete@mail.com")
+                .status(com.dmasone.identity.domain.model.UserStatus.ACTIVE)
+                .createdAt(java.time.Instant.now())
+                .updatedAt(java.time.Instant.now())
+                .build();
 
-        CreateUserRequestV1 request = new CreateUserRequestV1(
-                "delete@mail.com",
-                "password123"
-        );
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserResponseV1 created = userService.createUser(request);
+        userService.deleteUser(id);
 
-        userService.deleteUser(created.getId().toString());
-
-        User deleted = userRepository.findById(created.getId()).orElseThrow();
-
-        assertThat(deleted.getStatus().name()).isEqualTo("INACTIVE");
+        assertThat(user.getStatus()).isEqualTo(com.dmasone.identity.domain.model.UserStatus.INACTIVE);
+        verify(userRepository).save(user);
     }
 }

@@ -1,181 +1,136 @@
-# Identity Service API (API-First, Contract-Driven)
+# Identity Service API
 
 ![CI](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml/badge.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## Overview
+Production-style backend service for user identity management, built with an API-first and contract-driven approach.
 
-This project is a production-style **Identity / User Service** built using an **API-first, contract-driven approach**.
+The repository is designed to showcase backend engineering practices that matter in a real team: OpenAPI contracts, generated API interfaces, layered architecture, persistence migrations, validation, RFC 7807 errors, unit tests, integration tests, Docker support, and CI.
 
-The goal of this repository is to demonstrate how to design and implement APIs that are:
+## What It Demonstrates
 
-* Consistent
-* Versioned
-* Well-documented
-* Consumer-friendly
-
----
-
-## Key Features
-
-* **OpenAPI-first design** (YAML contract is the source of truth)
-* **Code generation** using OpenAPI Generator
-* **MapStruct-based DTO mapping (no manual mapping)**
-* **Versioned APIs** (`/api/v1`, `/api/v2`)
-* **RFC7807-compliant error handling**
-* **Strict separation: API / Domain / Service layers**
-* **Bean validation (Jakarta Validation)**
-* **Unit & integration testing (Testcontainers)**
-* **Mock server (Prism)**
-* **Contract testing ready**
-
----
+* API-first design with OpenAPI as the source of truth
+* Generated Spring MVC interfaces and models from the OpenAPI contract
+* Versioned APIs: `/api/v1` and `/api/v2`
+* Layered structure: API, service, domain, persistence, infrastructure
+* MapStruct mapping between generated API models and domain entities
+* PostgreSQL persistence with Flyway migrations
+* BCrypt password hashing
+* RFC 7807 `ProblemDetail` error responses
+* Fast unit tests with Mockito
+* Integration tests with Testcontainers
+* GitHub Actions CI
 
 ## Tech Stack
 
 * Java 21
-* Spring Boot 4.0.6
-* Maven
-* OpenAPI 3
-* MapStruct
+* Spring Boot 4
+* Spring MVC
+* Spring Data JPA
 * PostgreSQL
+* Flyway
+* OpenAPI Generator
+* MapStruct
 * Testcontainers
-* Prism (mock server)
+* Maven
+* Docker Compose
 
----
+## API Contract
 
-## API Design Approach
+The contract lives in:
 
-The API contract is defined first in:
-
-```
+```text
 src/main/resources/openapi/identity-api.yaml
 ```
 
-From this contract:
+During the Maven build, OpenAPI Generator creates:
 
-* Server interfaces are generated using OpenAPI Generator
-* DTOs are automatically derived from the specification
-* Controllers implement generated interfaces
-* MapStruct handles DTO ↔ Domain mapping
+* `UsersV1Api`
+* `UsersV2Api`
+* request and response models
 
-This ensures:
+Controllers implement the generated interfaces, so the HTTP layer stays aligned with the contract.
 
-* No contract drift
-* Strong typing between layers
-* Reduced boilerplate code
-* Clear separation between API and business logic
+## Endpoints
 
----
+| Method | Path | Description |
+| --- | --- | --- |
+| `POST` | `/api/v1/users` | Create a v1 user |
+| `GET` | `/api/v1/users/{id}` | Get a v1 user |
+| `DELETE` | `/api/v1/users/{id}` | Soft-delete a user |
+| `POST` | `/api/v2/users` | Create a v2 user with profile fields |
+| `GET` | `/api/v2/users/{id}` | Get a v2 user |
+| `PATCH` | `/api/v2/users/{id}` | Partially update profile/status |
 
-## Architecture Highlights
+Swagger UI is available at:
 
-This project follows a layered architecture with clear separation of concerns:
+```text
+http://localhost:8080/api/swagger-ui.html
+```
 
-* **API Layer**
-    - OpenAPI-generated interfaces
-    - Controllers only handle HTTP orchestration
+## Run Locally
 
-* **Service Layer**
-    - Business logic
-    - Versioned services (`V1`, `V2`) for API evolution
-
-* **Domain Layer**
-    - JPA entities
-    - Repository interfaces
-
-* **Mapping Layer**
-    - MapStruct used for automatic DTO ↔ Entity mapping
-    - Eliminates manual mapping boilerplate
-    - Ensures consistency between API versions
-
----
-
-## Design Decisions
-
-* Manual mapping was intentionally avoided in favor of MapStruct to reduce boilerplate and enforce consistency.
-* API versioning is handled at URL level (`/v1`, `/v2`) instead of header-based versioning for simplicity and clarity.
-* DTOs are separated per API version to allow controlled evolution without breaking existing clients.
-
----
-
-## Tooling
-
-* OpenAPI Generator → API interface + models
-* MapStruct → DTO mapping layer
-* Prism → OpenAPI mock server for contract testing
-
----
-
-## Running the Application
+Start PostgreSQL:
 
 ```bash
-mvn clean install
+docker compose up -d db
+```
+
+Run the service:
+
+```bash
 mvn spring-boot:run
 ```
 
----
+Default database settings:
 
-## Running Tests
+```text
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+```
+
+## Tests
+
+Run unit tests:
 
 ```bash
 mvn test
 ```
 
-Integration tests use **Testcontainers**, so Docker must be running.
-
----
-
-## Mock Server
-
-You can run a mock version of the API without starting the application:
+Run the full verification, including Testcontainers integration tests:
 
 ```bash
-prism mock src/main/resources/openapi/identity-api.yaml
+mvn verify
 ```
 
----
+Docker must be running for integration tests.
 
-## API Versioning
+## Build The Docker Image
 
-* `v1` → stable API
-* `v2` → backward-compatible improvements
+Package the application:
 
----
-
-## Error Handling
-
-Errors follow the **RFC7807 Problem Details** standard.
-
-Example:
-
-```json
-{
-  "type": "about:blank",
-  "title": "Validation error",
-  "status": 400,
-  "detail": "Email is invalid"
-}
+```bash
+mvn clean package
 ```
 
----
+Build the image:
 
-## Why This Project
+```bash
+docker build -t identity-service .
+```
 
-This repository demonstrates:
+## Design Notes
 
-* API design skills
-* Contract-first development
-* Backend architecture best practices
-* Production-ready patterns
-
----
+* v1 keeps the smallest stable user contract.
+* v2 extends the API with profile fields while preserving v1.
+* Deletes are soft deletes through the `INACTIVE` status.
+* API models are generated; domain entities remain internal.
+* MapStruct is configured to fail on unmapped target properties, making DTO drift visible during compilation.
 
 ## Future Improvements
 
-* Authentication (OAuth2 / JWT)
+* OAuth2/JWT authentication
+* Role and permission model
+* Audit trail
 * Rate limiting
-* Audit logging
-* Event-driven integration (Kafka)
-
----
+* Event publishing for user lifecycle changes

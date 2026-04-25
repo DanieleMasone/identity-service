@@ -1,4 +1,4 @@
-package com.dmasone.identity.service;
+package com.dmasone.identity;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -9,5 +9,4 @@ public class IdentityServiceApplication {
     public static void main(String[] args) {
         SpringApplication.run(IdentityServiceApplication.class, args);
     }
-
 }

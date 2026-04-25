@@ -34,12 +34,11 @@ build/
 
 ### VS Code ###
 .vscode/
+.vs/
 
 # Spring Boot
 *.pid
 *.orig
 
 # Maven
-.mvn/
-mvnw.cmd
-mvnw
+.m2/

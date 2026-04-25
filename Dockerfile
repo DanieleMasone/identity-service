@@ -1,8 +1,8 @@
-FROM eclipse-temurin:21-jdk
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 
-COPY target/identity-service.jar app.jar
+COPY target/identity-service.jar /app/app.jar
 
 EXPOSE 8080
 
