@@ -122,17 +122,20 @@
                             <apiPackage>com.dmasone.identity.api.generated</apiPackage>
                             <modelPackage>com.dmasone.identity.api.generated.model</modelPackage>
 
-                            <output>${project.build.directory}/generated-sources/openapi</output>
+                            <output>${project.basedir}/src/generated</output>
                             <addCompileSourceRoot>true</addCompileSourceRoot>
                             <cleanupOutput>true</cleanupOutput>
+                            <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
 
                             <configOptions>
                                 <interfaceOnly>true</interfaceOnly>
                                 <dateLibrary>java8</dateLibrary>
+                                <sourceFolder>java</sourceFolder>
                                 <useTags>true</useTags>
                                 <useSpringBoot3>true</useSpringBoot3>
                                 <useJakartaEe>true</useJakartaEe>
                                 <openApiNullable>false</openApiNullable>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -163,6 +166,7 @@
                         <configuration>
                             <source>${java.version}</source>
                             <target>${java.version}</target>
+                            <generatedSourcesDirectory>${project.basedir}/src/generated/annotations</generatedSourcesDirectory>
                             <annotationProcessorPaths>
                                 <path>
                                     <groupId>org.projectlombok</groupId>
@@ -176,6 +180,8 @@
                             </annotationProcessorPaths>
                             <compilerArgs>
                                 <arg>-Amapstruct.unmappedTargetPolicy=ERROR</arg>
+                                <arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
+                                <arg>-Amapstruct.suppressGeneratorVersionInfoComment=true</arg>
                             </compilerArgs>
                         </configuration>
                     </execution>

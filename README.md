@@ -51,6 +51,25 @@ During the Maven build, OpenAPI Generator creates:
 
 Controllers implement the generated interfaces, so the HTTP layer stays aligned with the contract.
 
+## Generated Sources
+
+Generated code is created by Maven during the build and stored under `src/generated/` so the generated API layer is visible in the repository.
+
+Generate OpenAPI interfaces/models and the MapStruct implementation:
+
+```bash
+mvn clean compile
+```
+
+Generated output:
+
+```text
+src/generated/java/com/dmasone/identity/api/generated
+src/generated/annotations/com/dmasone/identity/api/mapper/UserMapperImpl.java
+```
+
+Generated files should not be edited manually. They are reproducible from the OpenAPI contract and the MapStruct mapper interface.
+
 ## Endpoints
 
 | Method | Path | Description |
