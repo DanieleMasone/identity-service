@@ -124,6 +124,20 @@ mvn verify
 
 Docker must be running for integration tests.
 
+Generate project JavaDoc for the handwritten source files:
+
+```bash
+mvn javadoc:javadoc
+```
+
+The JavaDoc configuration resolves generated OpenAPI types during the build, but excludes generated packages from the published API documentation.
+
+The generated documentation is written to:
+
+```text
+target/reports/apidocs
+```
+
 ## Build The Docker Image
 
 Package the application:

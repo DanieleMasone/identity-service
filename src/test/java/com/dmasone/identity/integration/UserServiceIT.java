@@ -16,6 +16,12 @@ import org.testcontainers.utility.DockerImageName;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Integration test that verifies service behavior against a real PostgreSQL container.
+ *
+ * <p>The test exercises Flyway migrations, Spring wiring, JPA persistence, and
+ * the service contract in a production-like database environment.</p>
+ */
 @SpringBootTest
 @Testcontainers
 class UserServiceIT {

@@ -10,6 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/**
+ * HTTP adapter for the first version of the users API.
+ *
+ * <p>The controller implements the OpenAPI-generated contract and delegates all
+ * business decisions to {@link UserServiceV1}. Version 1 intentionally exposes a
+ * compact user representation for backward compatibility.</p>
+ */
 @RestController
 @RequiredArgsConstructor
 public class UsersV1Controller implements UsersV1Api {

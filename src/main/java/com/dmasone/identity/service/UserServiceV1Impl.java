@@ -15,6 +15,13 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Default implementation of version 1 user business operations.
+ *
+ * <p>The service owns application behavior such as duplicate-email checks,
+ * password hashing, lifecycle timestamps, and soft deletion. Mapping remains
+ * delegated to MapStruct.</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class UserServiceV1Impl implements UserServiceV1 {

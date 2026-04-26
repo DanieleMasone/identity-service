@@ -6,7 +6,13 @@ import lombok.*;
 import java.time.Instant;
 import java.util.UUID;
 
-
+/**
+ * Persistent user aggregate managed by the identity service.
+ *
+ * <p>The entity stores internal state such as password hash and lifecycle status.
+ * API-specific DTOs are generated from the OpenAPI contract and mapped through
+ * MapStruct instead of being exposed directly from the domain layer.</p>
+ */
 @Getter
 @Setter
 @Builder

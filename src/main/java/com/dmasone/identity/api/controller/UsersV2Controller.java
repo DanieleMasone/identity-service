@@ -11,6 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/**
+ * HTTP adapter for the second version of the users API.
+ *
+ * <p>Version 2 extends the user contract with profile fields and partial updates
+ * while keeping the controller thin and aligned with the OpenAPI-generated
+ * interface.</p>
+ */
 @RestController
 @RequiredArgsConstructor
 public class UsersV2Controller implements UsersV2Api {

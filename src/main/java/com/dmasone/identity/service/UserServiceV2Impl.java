@@ -16,6 +16,12 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Default implementation of version 2 user business operations.
+ *
+ * <p>The service keeps v2-specific profile updates separate from v1 behavior,
+ * which makes API evolution explicit and easy to review.</p>
+ */
 @Service
 @RequiredArgsConstructor
 public class UserServiceV2Impl implements UserServiceV2 {

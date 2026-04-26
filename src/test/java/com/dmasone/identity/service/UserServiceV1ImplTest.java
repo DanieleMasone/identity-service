@@ -28,6 +28,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for version 1 user business behavior.
+ *
+ * <p>The tests isolate service logic from the database and verify the core
+ * contract: creation, duplicate email protection, lookup failures, and soft
+ * deletion.</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class UserServiceV1ImplTest {
 

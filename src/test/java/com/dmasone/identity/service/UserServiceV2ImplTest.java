@@ -30,6 +30,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+/**
+ * Unit tests for version 2 user business behavior.
+ *
+ * <p>The suite documents the API evolution introduced in v2: profile fields,
+ * partial updates, duplicate email protection, and password hashing.</p>
+ */
 @ExtendWith(MockitoExtension.class)
 class UserServiceV2ImplTest {
 

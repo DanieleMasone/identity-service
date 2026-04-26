@@ -124,7 +124,8 @@
 
                             <output>${project.basedir}/src/generated</output>
                             <addCompileSourceRoot>true</addCompileSourceRoot>
-                            <cleanupOutput>true</cleanupOutput>
+                            <!-- Keep MapStruct output under src/generated/annotations when standalone goals run OpenAPI generation. -->
+                            <cleanupOutput>false</cleanupOutput>
                             <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
 
                             <configOptions>
@@ -213,6 +214,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <sourcepath>${project.basedir}/src/main/java${path.separator}${project.basedir}/src/generated/java</sourcepath>
+                    <excludePackageNames>com.dmasone.identity.api.generated:com.dmasone.identity.api.generated.model</excludePackageNames>
+                    <doclint>all,-missing</doclint>
+                </configuration>
             </plugin>
         </plugins>
     </build>
