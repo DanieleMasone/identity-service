@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * the service contract in a production-like database environment.</p>
  */
 @SpringBootTest
-@Testcontainers
+@Testcontainers(disabledWithoutDocker = true)
 class UserServiceIT {
 
     private static final DockerImageName POSTGRES_IMAGE = DockerImageName.parse("postgres:16");

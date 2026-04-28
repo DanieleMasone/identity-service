@@ -139,4 +139,15 @@ class UserServiceV1ImplTest {
         assertThat(user.getStatus()).isEqualTo(com.dmasone.identity.domain.model.UserStatus.INACTIVE);
         verify(userRepository).save(user);
     }
+
+    @Test
+    void shouldFailDeleteWhenUserNotFound() {
+        UUID id = UUID.fromString("00000000-0000-0000-0000-000000000000");
+        when(userRepository.findById(id)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> userService.deleteUser(id))
+                .isInstanceOf(UserNotFoundException.class);
+
+        verify(userRepository, never()).save(any(User.class));
+    }
 }

@@ -157,6 +157,26 @@ class UserServiceV2ImplTest {
     }
 
     @Test
+    void shouldUpdateOnlyProvidedFields() {
+        UUID id = UUID.randomUUID();
+        User user = buildUser(id);
+        UpdateUserRequestV2 updateRequest = new UpdateUserRequestV2()
+                .firstName("Luigi");
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserResponseV2 updated = userService.updateUser(id, updateRequest);
+
+        assertThat(updated.getFirstName()).isEqualTo("Luigi");
+        assertThat(updated.getLastName()).isEqualTo("Rossi");
+        assertThat(updated.getStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(user.getFirstName()).isEqualTo("Luigi");
+        assertThat(user.getLastName()).isEqualTo("Rossi");
+        assertThat(user.getStatus()).isEqualTo(com.dmasone.identity.domain.model.UserStatus.ACTIVE);
+    }
+
+    @Test
     void shouldFailUpdateWhenUserNotFound() {
         UUID fakeId = UUID.fromString("00000000-0000-0000-0000-000000000000");
         UpdateUserRequestV2 request = new UpdateUserRequestV2().status(UserStatus.ACTIVE);
