@@ -8,6 +8,10 @@
 # -------------------------
 *.java text eol=lf
 
+# Generated source code
+src/generated/openapi/** linguist-generated=true
+src/generated/mapstruct/** linguist-generated=true
+
 # Maven wrapper
 mvnw text eol=lf
 mvnw.cmd text eol=crlf

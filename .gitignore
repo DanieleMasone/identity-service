@@ -42,4 +42,4 @@ build/
 
 # Maven
 .m2/
-src/generated/.openapi-generator/
+src/generated/openapi/.openapi-generator/

@@ -53,7 +53,7 @@ Controllers implement the generated interfaces, so the HTTP layer stays aligned 
 
 ## Generated Sources
 
-Generated code is created by Maven during the build and stored under `src/generated/` so the generated API layer is visible in the repository.
+Generated code is created by Maven during the build and stored under `src/generated/` so the generated API and mapper layers are visible in the repository.
 
 Generate OpenAPI interfaces/models and the MapStruct implementation:
 
@@ -64,11 +64,11 @@ mvn clean compile
 Generated output:
 
 ```text
-src/generated/java/com/dmasone/identity/api/generated
-src/generated/annotations/com/dmasone/identity/api/mapper/UserMapperImpl.java
+src/generated/openapi/java/com/dmasone/identity/api/generated
+src/generated/mapstruct/java/com/dmasone/identity/api/mapper/UserMapperImpl.java
 ```
 
-Generated files should not be edited manually. They are reproducible from the OpenAPI contract and the MapStruct mapper interface.
+Generated files should not be edited manually. OpenAPI Generator owns `src/generated/openapi`, while MapStruct owns `src/generated/mapstruct`. Both paths are marked as generated in `.gitattributes` so GitHub can keep diffs and language statistics focused on handwritten code.
 
 ## Endpoints
 
