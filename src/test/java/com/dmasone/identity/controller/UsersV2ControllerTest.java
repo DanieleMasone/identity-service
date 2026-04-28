@@ -1,5 +1,6 @@
-package com.dmasone.identity.api.controller;
+package com.dmasone.identity.controller;
 
+import com.dmasone.identity.api.controller.UsersV2Controller;
 import com.dmasone.identity.api.generated.model.CreateUserRequestV2;
 import com.dmasone.identity.api.generated.model.UpdateUserRequestV2;
 import com.dmasone.identity.api.generated.model.UserResponseV2;
