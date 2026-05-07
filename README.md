@@ -31,9 +31,7 @@ docs/
 
 After GitHub publishes it, the project page will be available at:
 
-```text
-https://danielemasone.github.io/identity-service/
-```
+[https://danielemasone.github.io/identity-service/](https://danielemasone.github.io/identity-service/)
 
 ## Tech Stack
 
