@@ -1,7 +1,7 @@
 # Identity Service API
 
-![CI](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml/badge.svg)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![CI](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 Production-style backend service for user identity management, built with an API-first and contract-driven approach.
 
