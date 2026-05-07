@@ -4,6 +4,8 @@ import com.dmasone.identity.api.generated.model.CreateUserRequestV1;
 import com.dmasone.identity.api.generated.model.UserResponseV1;
 import com.dmasone.identity.domain.repository.UserRepository;
 import com.dmasone.identity.service.UserServiceV1;
+import org.flywaydb.core.Flyway;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>The test exercises Flyway migrations, Spring wiring, JPA persistence, and
  * the service contract in a production-like database environment.</p>
  */
-@SpringBootTest
+@SpringBootTest(properties = "spring.jpa.hibernate.ddl-auto=none")
 @Testcontainers(disabledWithoutDocker = true)
 class UserServiceIT {
 
@@ -46,6 +48,14 @@ class UserServiceIT {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    Flyway flyway;
+
+    @BeforeEach
+    void migrateSchema() {
+        flyway.migrate();
+    }
 
     @Test
     void shouldCreateUser_readUser_andPersistInDb() {
