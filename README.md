@@ -23,18 +23,11 @@ The repository is designed to showcase backend engineering practices that matter
 
 ## GitHub Pages Showcase
 
-This repository includes a static HR-friendly showcase under:
+This repository includes a static showcase designed for recruiters and hiring managers, located in:
 
 ```text
 docs/
 ```
-
-Enable it from the GitHub repository settings:
-
-1. Open `Settings` -> `Pages`.
-2. Set `Source` to `Deploy from a branch`.
-3. Select branch `master` and folder `/docs`.
-4. Save.
 
 After GitHub publishes it, the project page will be available at:
 
