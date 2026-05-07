@@ -5,7 +5,6 @@ import com.dmasone.identity.api.generated.model.UserResponseV1;
 import com.dmasone.identity.domain.repository.UserRepository;
 import com.dmasone.identity.service.UserServiceV1;
 import org.flywaydb.core.Flyway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * <p>The test exercises Flyway migrations, Spring wiring, JPA persistence, and
  * the service contract in a production-like database environment.</p>
  */
-@SpringBootTest(properties = "spring.jpa.hibernate.ddl-auto=none")
+@SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
 class UserServiceIT {
 
@@ -38,6 +37,13 @@ class UserServiceIT {
 
     @DynamicPropertySource
     static void overrideProperties(DynamicPropertyRegistry registry) {
+        postgres.start();
+        Flyway.configure()
+                .dataSource(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword())
+                .locations("classpath:db/migration")
+                .load()
+                .migrate();
+
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
@@ -48,14 +54,6 @@ class UserServiceIT {
 
     @Autowired
     UserRepository userRepository;
-
-    @Autowired
-    Flyway flyway;
-
-    @BeforeEach
-    void migrateSchema() {
-        flyway.migrate();
-    }
 
     @Test
     void shouldCreateUser_readUser_andPersistInDb() {
