@@ -4,6 +4,7 @@ import com.dmasone.identity.api.controller.UsersV1Controller;
 import com.dmasone.identity.api.generated.model.CreateUserRequestV1;
 import com.dmasone.identity.api.generated.model.UserResponseV1;
 import com.dmasone.identity.api.generated.model.UserStatus;
+import com.dmasone.identity.infrastructure.exception.EmailAlreadyExistsException;
 import com.dmasone.identity.infrastructure.exception.GlobalExceptionHandler;
 import com.dmasone.identity.infrastructure.exception.UserNotFoundException;
 import com.dmasone.identity.service.UserServiceV1;
@@ -104,6 +105,24 @@ class UsersV1ControllerTest {
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.errors.email").exists())
                 .andExpect(jsonPath("$.errors.password").exists());
+    }
+
+    @Test
+    void shouldReturnConflictWhenEmailAlreadyExists() throws Exception {
+        when(userService.createUser(any(CreateUserRequestV1.class)))
+                .thenThrow(new EmailAlreadyExistsException("Email already exists"));
+
+        mockMvc.perform(post("/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "email", "duplicate@mail.com",
+                                "password", "password123"
+                        ))))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.title").value("Email already exists"))
+                .andExpect(jsonPath("$.status").value(409))
+                .andExpect(jsonPath("$.detail").value("Email already exists"));
     }
 
     @Test

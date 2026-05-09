@@ -6,19 +6,12 @@ on:
   pull_request:
     branches: [ "master" ]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   build-test-site:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout code
@@ -31,8 +24,12 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Build, Test & Generate Site
-        run: mvn -B -ntp clean verify site
+      - name: Build & Test
+        run: mvn -B -ntp clean verify
+
+      - name: Generate Documentation Site
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: mvn -B -ntp site -DskipTests
 
       - name: Upload GitHub Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
@@ -45,6 +42,12 @@ jobs:
     needs: build-test-site
 
     runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
 
     environment:
       name: github-pages

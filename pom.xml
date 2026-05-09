@@ -47,6 +47,8 @@
         <maven.project.info.reports.plugin.version>3.9.0</maven.project.info.reports.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <generated.openapi.dir>${project.basedir}/src/generated/openapi</generated.openapi.dir>
         <generated.mapstruct.dir>${project.basedir}/src/generated/mapstruct/java</generated.mapstruct.dir>
     </properties>
@@ -85,17 +87,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webmvc-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -189,8 +181,6 @@
                             <goal>compile</goal>
                         </goals>
                         <configuration>
-                            <source>${java.version}</source>
-                            <target>${java.version}</target>
                             <generatedSourcesDirectory>${generated.mapstruct.dir}</generatedSourcesDirectory>
                             <annotationProcessorPaths>
                                 <path>
@@ -284,8 +274,6 @@
                     <reportSet>
                         <reports>
                             <report>summary</report>
-                            <report>dependencies</report>
-                            <report>dependency-management</report>
                             <report>plugins</report>
                             <report>ci-management</report>
                             <report>licenses</report>

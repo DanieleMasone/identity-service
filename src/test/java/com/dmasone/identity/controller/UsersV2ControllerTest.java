@@ -167,6 +167,24 @@ class UsersV2ControllerTest {
     }
 
     @Test
+    void shouldRejectInvalidUpdatePayload() throws Exception {
+        UUID id = UUID.randomUUID();
+
+        mockMvc.perform(patch("/v2/users/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "firstName", ""
+                        ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.title").value("Validation error"))
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.errors.firstName").exists());
+
+        verify(userService, never()).updateUser(any(UUID.class), any(UpdateUserRequestV2.class));
+    }
+
+    @Test
     void shouldRejectMalformedUserId() throws Exception {
         mockMvc.perform(get("/v2/users/{id}", "not-a-uuid"))
                 .andExpect(status().isBadRequest())

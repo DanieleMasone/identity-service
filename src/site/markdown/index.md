@@ -21,8 +21,13 @@ rebuilt from the repository source every time the `master` branch is updated.
 
 * [JavaDoc](apidocs/index.html)
 * [Project Summary](summary.html)
-* [Dependencies](dependencies.html)
 * [Plugins](plugins.html)
+
+## Build Runtime
+
+* Java 21
+* Maven
+* GitHub Actions on `ubuntu-latest`
 
 ## Source Links
 
@@ -35,7 +40,7 @@ rebuilt from the repository source every time the `master` branch is updated.
 Generate the same site locally:
 
 ```bash
-mvn clean verify site
+mvn site -DskipTests
 ```
 
 The generated output is written to:
