@@ -2,6 +2,9 @@
 
 [![CI](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/temurin/releases/?version=21)
+[![Spring Boot 4](https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F.svg)](https://spring.io/projects/spring-boot)
+[![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-222222.svg)](https://danielemasone.github.io/identity-service/)
 
 Production-style backend service for user identity management, built with an API-first and contract-driven approach.
 
