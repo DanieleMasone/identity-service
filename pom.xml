@@ -13,23 +13,40 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>identity-service</name>
     <description>API-first identity service with versioned user APIs</description>
-    <url/>
+    <url>https://danielemasone.github.io/identity-service/</url>
     <licenses>
-        <license/>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/license/mit/</url>
+            <distribution>repo</distribution>
+        </license>
     </licenses>
     <developers>
-        <developer/>
+        <developer>
+            <id>DanieleMasone</id>
+            <name>Daniele Masone</name>
+            <url>https://github.com/DanieleMasone</url>
+        </developer>
     </developers>
     <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
+        <connection>scm:git:https://github.com/DanieleMasone/identity-service.git</connection>
+        <developerConnection>scm:git:https://github.com/DanieleMasone/identity-service.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/DanieleMasone/identity-service</url>
     </scm>
+    <ciManagement>
+        <system>GitHub Actions</system>
+        <url>https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml</url>
+    </ciManagement>
     <properties>
         <java.version>21</java.version>
         <openapi.generator.version>7.0.0</openapi.generator.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <maven.site.plugin.version>3.21.0</maven.site.plugin.version>
+        <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
+        <maven.project.info.reports.plugin.version>3.9.0</maven.project.info.reports.plugin.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <generated.openapi.dir>${project.basedir}/src/generated/openapi</generated.openapi.dir>
         <generated.mapstruct.dir>${project.basedir}/src/generated/mapstruct/java</generated.mapstruct.dir>
     </properties>
@@ -225,13 +242,59 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
                 <configuration>
                     <sourcepath>${project.basedir}/src/main/java${path.separator}${generated.openapi.dir}/java</sourcepath>
                     <excludePackageNames>com.dmasone.identity.api.generated:com.dmasone.identity.api.generated.model</excludePackageNames>
                     <doclint>all,-missing</doclint>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>${maven.site.plugin.version}</version>
+            </plugin>
         </plugins>
     </build>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <sourcepath>${project.basedir}/src/main/java${path.separator}${generated.openapi.dir}/java</sourcepath>
+                    <excludePackageNames>com.dmasone.identity.api.generated:com.dmasone.identity.api.generated.model</excludePackageNames>
+                    <doclint>all,-missing</doclint>
+                </configuration>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>${maven.project.info.reports.plugin.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>summary</report>
+                            <report>dependencies</report>
+                            <report>dependency-management</report>
+                            <report>plugins</report>
+                            <report>ci-management</report>
+                            <report>licenses</report>
+                            <report>scm</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+        </plugins>
+    </reporting>
 
 </project>
