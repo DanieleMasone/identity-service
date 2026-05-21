@@ -183,3 +183,9 @@ DB_PASSWORD=postgres
 * Deletes are soft deletes through the `INACTIVE` status.
 * API models are generated from OpenAPI; domain entities remain internal.
 * MapStruct is configured to fail on unmapped target properties, making DTO drift visible during compilation.
+
+## License
+
+Released under the MIT License. See [LICENSE](LICENSE).
+
+Copyright (c) 2026 Daniele Masone.
