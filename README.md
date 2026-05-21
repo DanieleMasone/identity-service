@@ -20,6 +20,7 @@ The project is intentionally compact, but it demonstrates practices expected in 
 | OpenAPI contract | [identity-api.yaml](https://github.com/DanieleMasone/identity-service/blob/master/src/main/resources/openapi/identity-api.yaml) |
 | Postman collection | [identity-service.postman_collection.json](https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json) |
 | Coverage report | [Published JaCoCo report](https://danielemasone.github.io/identity-service/coverage/) |
+| Generated documentation site | [Maven site and JavaDoc](https://danielemasone.github.io/identity-service/maven-site/) |
 | Local Swagger UI | [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html) |
 
 ## What It Demonstrates
@@ -35,6 +36,27 @@ The project is intentionally compact, but it demonstrates practices expected in 
 * Maven JaCoCo XML and HTML coverage reports
 * Docker Compose startup for PostgreSQL and the Spring Boot application
 * GitHub Actions verification, Docker validation and Pages deployment
+
+## Architecture Overview
+
+```mermaid
+flowchart TD
+    consumer["Client / API Consumer"] --> contract["OpenAPI Contract<br/>identity-api.yaml"]
+    contract --> generated["Generated MVC Interfaces & DTOs<br/>target/generated-sources/openapi"]
+    generated --> controller["Controller Layer<br/>UsersV1Controller / UsersV2Controller"]
+    controller --> service["Service Layer<br/>UserServiceV1 / UserServiceV2"]
+    service --> mapper["MapStruct Mapper<br/>API models to domain"]
+    mapper --> domain["Domain Layer<br/>User aggregate"]
+    domain --> repository["Repository Layer<br/>Spring Data JPA"]
+    repository --> postgres["PostgreSQL"]
+
+    flyway["Flyway migrations"] --> postgres
+    tests["Testcontainers integration tests"] --> postgres
+    docker["Docker Compose runtime"] --> controller
+    actions["GitHub Actions CI/CD"] --> tests
+    actions --> docker
+    actions --> coverage["JaCoCo coverage + Pages artifact"]
+```
 
 ## Generated Sources
 
@@ -81,6 +103,8 @@ Swagger UI is available at:
 ```text
 http://localhost:8080/api/swagger-ui.html
 ```
+
+GitHub Pages is static and cannot expose the running Swagger UI directly. Start the application locally, then open the Swagger UI URL above. The published dashboard links to the source OpenAPI YAML and documents this local endpoint.
 
 ## Run With Docker Compose
 
@@ -140,6 +164,8 @@ No frontend framework is used. GitHub Actions publishes the dashboard as the Pag
 ```
 
 GitHub Pages should be configured with `Source: GitHub Actions`.
+
+The dashboard is static. It can link to the OpenAPI contract, coverage report, Maven site and local Swagger UI instructions, but it does not run the backend service.
 
 ## CI/CD Workflow
 

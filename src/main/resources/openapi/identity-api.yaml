@@ -73,7 +73,7 @@ paths:
           $ref: '#/components/responses/NotFound'
 
   ########################
-  # V2 (evoluzione)
+  # V2 (evolution)
   ########################
 
   /v2/users:
@@ -196,7 +196,7 @@ components:
           format: date-time
 
     ###########
-    # V2 DTOs (evoluzione)
+    # V2 DTOs (evolution)
     ###########
 
     CreateUserRequestV2:

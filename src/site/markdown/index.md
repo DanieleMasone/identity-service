@@ -40,6 +40,17 @@ published under `/maven-site/`.
 * [CI/CD workflow](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml)
 * [Public dashboard](https://danielemasone.github.io/identity-service/)
 
+## Local API Documentation
+
+Swagger UI is exposed by the running Spring Boot application at:
+
+```text
+http://localhost:8080/api/swagger-ui.html
+```
+
+GitHub Pages is static, so it links to the OpenAPI YAML and local Swagger UI
+instructions rather than hosting a live backend API.
+
 ## Local Verification
 
 Generate OpenAPI sources, MapStruct implementations, tests, package output and

@@ -29,6 +29,7 @@ import static jakarta.validation.Validation.buildDefaultValidatorFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -127,6 +128,27 @@ class UsersV1ControllerTest {
     }
 
     @Test
+    void shouldGetUserById() throws Exception {
+        UUID id = UUID.randomUUID();
+        UserResponseV1 response = new UserResponseV1()
+                .id(id)
+                .email("found@mail.com")
+                .status(UserStatus.ACTIVE)
+                .createdAt(OffsetDateTime.parse("2026-04-28T08:00:00Z"));
+
+        when(userService.getUserById(id)).thenReturn(response);
+
+        mockMvc.perform(get("/v1/users/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(id.toString()))
+                .andExpect(jsonPath("$.email").value("found@mail.com"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
+
+        verify(userService).getUserById(id);
+    }
+
+    @Test
     void shouldReturnProblemDetailWhenUserDoesNotExist() throws Exception {
         UUID id = UUID.randomUUID();
         when(userService.getUserById(id)).thenThrow(new UserNotFoundException("User not found"));
@@ -137,6 +159,18 @@ class UsersV1ControllerTest {
                 .andExpect(jsonPath("$.title").value("User not found"))
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.detail").value("User not found"));
+    }
+
+    @Test
+    void shouldRejectMalformedUserId() throws Exception {
+        mockMvc.perform(get("/v1/users/{id}", "not-a-uuid"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.title").value("Invalid path parameter"))
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.detail").value("Parameter 'id' has an invalid value"));
+
+        verify(userService, never()).getUserById(any(UUID.class));
     }
 
     @Test

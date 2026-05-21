@@ -62,32 +62,23 @@
             in handwritten Spring components.
           </p>
         </div>
-        <div class="architecture-flow" aria-label="Architecture layers">
-          <article>
-            <span>01</span>
-            <h3>API Layer</h3>
-            <p>Generated MVC interfaces implemented by thin controllers.</p>
-          </article>
-          <article>
-            <span>02</span>
-            <h3>Service Layer</h3>
-            <p>Business rules for creation, duplicate checks, updates, and soft deletes.</p>
-          </article>
-          <article>
-            <span>03</span>
-            <h3>Domain Layer</h3>
-            <p>User aggregate and lifecycle state kept independent from HTTP DTOs.</p>
-          </article>
-          <article>
-            <span>04</span>
-            <h3>Persistence Layer</h3>
-            <p>Spring Data JPA repositories backed by PostgreSQL.</p>
-          </article>
-          <article>
-            <span>05</span>
-            <h3>Infrastructure Layer</h3>
-            <p>Flyway, password hashing, error translation, Docker, and CI wiring.</p>
-          </article>
+        <div class="system-diagram" aria-label="Identity Service architecture diagram">
+          <div class="main-flow" aria-label="Request and persistence flow">
+            <article><span>Client/API Consumer</span></article>
+            <article><span>OpenAPI Contract</span><small>identity-api.yaml</small></article>
+            <article><span>Controller Layer</span><small>generated interfaces implemented by Spring MVC adapters</small></article>
+            <article><span>Service Layer</span><small>business rules, password hashing, soft deletes</small></article>
+            <article><span>Domain Layer</span><small>User aggregate and lifecycle state</small></article>
+            <article><span>Repository Layer</span><small>Spring Data JPA</small></article>
+            <article><span>PostgreSQL</span><small>runtime database</small></article>
+          </div>
+          <div class="support-flow" aria-label="Supporting engineering practices">
+            <article><strong>MapStruct</strong><span>maps generated API models to internal domain objects</span></article>
+            <article><strong>Flyway</strong><span>applies schema migrations before JPA validation</span></article>
+            <article><strong>Testcontainers</strong><span>runs integration tests against PostgreSQL</span></article>
+            <article><strong>Docker Compose</strong><span>starts app and database with readiness checks</span></article>
+            <article><strong>GitHub Actions</strong><span>runs Maven verification, Docker validation, coverage and Pages deployment</span></article>
+          </div>
         </div>
       </section>
 
@@ -194,6 +185,10 @@
           <a href="http://localhost:8080/api/swagger-ui.html">Local Swagger UI</a>
           <a href="https://github.com/DanieleMasone/identity-service/blob/master/LICENSE">License</a>
         </div>
+        <p class="static-note">
+          GitHub Pages is static, so Swagger UI is available only after starting the service locally
+          with <code>docker compose up --build</code> or <code>mvn spring-boot:run</code>.
+        </p>
       </section>
     </main>
 

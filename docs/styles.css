@@ -166,7 +166,7 @@ main {
 }
 
 .status-panel,
-.architecture-flow article,
+.system-diagram article,
 .feature-grid article,
 .version-grid article,
 .checklist,
@@ -222,29 +222,60 @@ main {
 .split p,
 .coverage-panel p,
 .feature-grid p,
-.architecture-flow p,
 .version-grid p {
   color: var(--muted);
 }
 
-.architecture-flow {
+.system-diagram {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 16px;
+}
+
+.main-flow,
+.support-flow {
+  display: grid;
   gap: 12px;
 }
 
-.architecture-flow article,
+.main-flow article {
+  position: relative;
+}
+
+.main-flow article:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  bottom: -13px;
+  width: 2px;
+  height: 13px;
+  background: var(--accent);
+}
+
+.main-flow span,
+.support-flow strong {
+  display: block;
+  font-weight: 800;
+}
+
+.main-flow small,
+.support-flow span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.support-flow article {
+  border-color: rgba(242, 193, 107, 0.45);
+}
+
+.system-diagram article,
 .feature-grid article,
 .version-grid article {
   padding: 18px;
 }
 
-.architecture-flow span {
-  color: var(--warning);
-  font-weight: 800;
-}
-
-.architecture-flow h3,
 .feature-grid h3,
 .version-grid h3 {
   margin: 10px 0 8px;
@@ -311,6 +342,11 @@ main {
   text-decoration: none;
 }
 
+.static-note {
+  margin-top: 16px;
+  color: var(--muted);
+}
+
 .site-footer {
   display: flex;
   justify-content: space-between;
@@ -355,10 +391,10 @@ main {
     margin-top: 20px;
   }
 
-  .architecture-flow,
+  .system-diagram,
   .feature-grid,
   .link-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 }
 
@@ -373,7 +409,6 @@ main {
     font-size: 2rem;
   }
 
-  .architecture-flow,
   .feature-grid,
   .version-grid,
   .link-grid {

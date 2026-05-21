@@ -137,6 +137,28 @@ class UsersV2ControllerTest {
     }
 
     @Test
+    void shouldGetUserById() throws Exception {
+        UUID id = UUID.randomUUID();
+        UserResponseV2 response = userResponse(id)
+                .email("found@mail.com")
+                .firstName("Mario")
+                .lastName("Rossi");
+
+        when(userService.getUserById(id)).thenReturn(response);
+
+        mockMvc.perform(get("/v2/users/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id").value(id.toString()))
+                .andExpect(jsonPath("$.email").value("found@mail.com"))
+                .andExpect(jsonPath("$.firstName").value("Mario"))
+                .andExpect(jsonPath("$.lastName").value("Rossi"))
+                .andExpect(jsonPath("$.status").value("ACTIVE"));
+
+        verify(userService).getUserById(id);
+    }
+
+    @Test
     void shouldUpdateUser() throws Exception {
         UUID id = UUID.randomUUID();
         UserResponseV2 response = userResponse(id)
