@@ -45,12 +45,13 @@
         <maven.site.plugin.version>3.21.0</maven.site.plugin.version>
         <maven.javadoc.plugin.version>3.12.0</maven.javadoc.plugin.version>
         <maven.project.info.reports.plugin.version>3.9.0</maven.project.info.reports.plugin.version>
+        <jacoco.maven.plugin.version>0.8.13</jacoco.maven.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <generated.openapi.dir>${project.basedir}/src/generated/openapi</generated.openapi.dir>
-        <generated.mapstruct.dir>${project.basedir}/src/generated/mapstruct/java</generated.mapstruct.dir>
+        <generated.openapi.dir>${project.build.directory}/generated-sources/openapi</generated.openapi.dir>
+        <generated.mapstruct.dir>${project.build.directory}/generated-sources/annotations</generated.mapstruct.dir>
     </properties>
     <dependencies>
         <dependency>
@@ -111,8 +112,8 @@
             <version>${mapstruct.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -228,6 +229,31 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>com/dmasone/identity/api/generated/**</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

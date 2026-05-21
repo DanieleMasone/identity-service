@@ -28,6 +28,7 @@ import java.util.UUID;
 import static jakarta.validation.Validation.buildDefaultValidatorFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -146,5 +147,20 @@ class UsersV1ControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(userService).deleteUser(id);
+    }
+
+    @Test
+    void shouldReturnProblemDetailWhenDeleteTargetDoesNotExist() throws Exception {
+        UUID id = UUID.randomUUID();
+        doThrow(new UserNotFoundException("User not found"))
+                .when(userService)
+                .deleteUser(id);
+
+        mockMvc.perform(delete("/v1/users/{id}", id))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.title").value("User not found"))
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.detail").value("User not found"));
     }
 }

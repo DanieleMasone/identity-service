@@ -1,5 +1,10 @@
 HELP.md
 target/
+pages/
+.env
+logs/
+*.tmp
+*.temp
 .mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -42,5 +47,4 @@ build/
 
 # Maven
 .m2/
-src/generated/openapi/.openapi-generator/
-docs/
+src/generated/

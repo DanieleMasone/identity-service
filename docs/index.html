@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Production-style Java identity service with OpenAPI, PostgreSQL, Docker, Testcontainers, CI and coverage reporting.">
+    <title>Identity Service API</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Identity Service API home">
+        <span class="brand-mark" aria-hidden="true">ID</span>
+        <span>Identity Service API</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#architecture">Architecture</a>
+        <a href="#testing">Testing</a>
+        <a href="#coverage">Coverage</a>
+        <a href="#links">Links</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-content">
+          <p class="eyebrow">Java 21 / Spring Boot 4 / PostgreSQL</p>
+          <h1>Production-style identity backend with contract-first APIs.</h1>
+          <p class="hero-copy">
+            A compact backend portfolio project focused on OpenAPI-driven Spring MVC contracts,
+            layered domain logic, Flyway migrations, Docker Compose, Testcontainers integration
+            tests, Maven reporting, and GitHub Actions delivery.
+          </p>
+          <div class="hero-actions" aria-label="Project actions">
+            <a class="button primary" href="https://github.com/DanieleMasone/identity-service">GitHub Repository</a>
+            <a class="button" href="coverage/">Coverage Report</a>
+            <a class="button" href="maven-site/">Maven Site</a>
+          </div>
+        </div>
+        <aside class="status-panel" aria-label="Project status">
+          <div>
+            <span class="status-label">Build</span>
+            <strong>mvn clean verify</strong>
+          </div>
+          <div>
+            <span class="status-label">Runtime</span>
+            <strong>Docker Compose</strong>
+          </div>
+          <div>
+            <span class="status-label">Database</span>
+            <strong>PostgreSQL + Flyway</strong>
+          </div>
+        </aside>
+      </section>
+
+      <section id="architecture" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Architecture</p>
+          <h2>Layered backend boundaries</h2>
+          <p>
+            The API contract is generated from OpenAPI, while domain and persistence logic stay
+            in handwritten Spring components.
+          </p>
+        </div>
+        <div class="architecture-flow" aria-label="Architecture layers">
+          <article>
+            <span>01</span>
+            <h3>API Layer</h3>
+            <p>Generated MVC interfaces implemented by thin controllers.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Service Layer</h3>
+            <p>Business rules for creation, duplicate checks, updates, and soft deletes.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Domain Layer</h3>
+            <p>User aggregate and lifecycle state kept independent from HTTP DTOs.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Persistence Layer</h3>
+            <p>Spring Data JPA repositories backed by PostgreSQL.</p>
+          </article>
+          <article>
+            <span>05</span>
+            <h3>Infrastructure Layer</h3>
+            <p>Flyway, password hashing, error translation, Docker, and CI wiring.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Capabilities</p>
+          <h2>What the project demonstrates</h2>
+        </div>
+        <div class="feature-grid">
+          <article><h3>OpenAPI-first contract</h3><p>The YAML contract drives generated Spring MVC APIs.</p></article>
+          <article><h3>Generated interfaces/models</h3><p>OpenAPI and MapStruct outputs are produced during Maven builds.</p></article>
+          <article><h3>v1/v2 APIs</h3><p>Versioned endpoints show backward-compatible API evolution.</p></article>
+          <article><h3>MapStruct</h3><p>Compile-time DTO/domain mapping with strict unmapped-property checks.</p></article>
+          <article><h3>Flyway</h3><p>Database schema changes are represented as migrations.</p></article>
+          <article><h3>RFC7807 ProblemDetail</h3><p>Validation, conflicts, and missing resources return consistent errors.</p></article>
+          <article><h3>Testcontainers</h3><p>Integration tests use real PostgreSQL containers.</p></article>
+          <article><h3>Docker Compose</h3><p>PostgreSQL and the application start together with DB readiness checks.</p></article>
+          <article><h3>GitHub Actions CI</h3><p>Verification, Docker validation, reporting, and Pages deployment are automated.</p></article>
+          <article><h3>JaCoCo coverage</h3><p>HTML and XML coverage reports are generated during Maven verification.</p></article>
+        </div>
+      </section>
+
+      <section class="section split">
+        <div>
+          <p class="eyebrow">API versioning</p>
+          <h2>Compact v1, expanded v2</h2>
+          <p>
+            Version 1 exposes the minimal user lifecycle. Version 2 adds profile fields and
+            partial updates while preserving the original contract.
+          </p>
+        </div>
+        <div class="version-grid">
+          <article>
+            <h3>v1</h3>
+            <p><code>POST /api/v1/users</code></p>
+            <p><code>GET /api/v1/users/{id}</code></p>
+            <p><code>DELETE /api/v1/users/{id}</code></p>
+          </article>
+          <article>
+            <h3>v2</h3>
+            <p><code>POST /api/v2/users</code></p>
+            <p><code>GET /api/v2/users/{id}</code></p>
+            <p><code>PATCH /api/v2/users/{id}</code></p>
+          </article>
+        </div>
+      </section>
+
+      <section id="testing" class="section split">
+        <div>
+          <p class="eyebrow">Testing and CI</p>
+          <h2>Verification-first pipeline</h2>
+          <p>
+            The main Maven gate is <code>mvn clean verify</code>. It runs unit tests, web-layer tests,
+            Testcontainers integration tests, packaging, and JaCoCo report generation.
+          </p>
+        </div>
+        <div class="checklist">
+          <p>Service-layer behavior</p>
+          <p>Repository queries against PostgreSQL</p>
+          <p>End-to-end CRUD flows</p>
+          <p>Error and validation scenarios</p>
+          <p>Docker image and Compose validation</p>
+        </div>
+      </section>
+
+      <section class="section split">
+        <div>
+          <p class="eyebrow">Docker</p>
+          <h2>Validated local runtime</h2>
+          <p>
+            <code>docker compose up --build</code> starts PostgreSQL and the Spring Boot service.
+            The application receives database credentials through <code>DB_USERNAME</code> and
+            <code>DB_PASSWORD</code>, while Compose waits for PostgreSQL readiness.
+          </p>
+        </div>
+        <pre class="command-block"><code>docker compose up --build</code></pre>
+      </section>
+
+      <section id="coverage" class="section coverage-panel">
+        <div>
+          <p class="eyebrow">Coverage</p>
+          <h2>JaCoCo reports published with the dashboard</h2>
+          <p>
+            Coverage is generated by Maven during <code>mvn clean verify</code>. CI publishes the
+            HTML report beside this dashboard, and the XML report remains available in the build output.
+          </p>
+        </div>
+        <a class="button primary" href="coverage/">Open Coverage Report</a>
+      </section>
+
+      <section id="links" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Useful links</p>
+          <h2>Project resources</h2>
+        </div>
+        <div class="link-grid">
+          <a href="https://github.com/DanieleMasone/identity-service">GitHub repository</a>
+          <a href="https://github.com/DanieleMasone/identity-service#readme">README</a>
+          <a href="https://github.com/DanieleMasone/identity-service/blob/master/src/main/resources/openapi/identity-api.yaml">OpenAPI YAML</a>
+          <a href="https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json">Postman collection</a>
+          <a href="https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml">GitHub Actions</a>
+          <a href="coverage/">Coverage report</a>
+          <a href="maven-site/">Maven site</a>
+          <a href="http://localhost:8080/api/swagger-ui.html">Local Swagger UI</a>
+          <a href="https://github.com/DanieleMasone/identity-service/blob/master/LICENSE">License</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Identity Service API</span>
+      <span id="build-year">Production-style Java backend portfolio project.</span>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

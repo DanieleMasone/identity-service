@@ -1,4 +1,4 @@
-name: Identity Service CI
+name: Identity Service CI/CD
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-test-site:
+  verify-build-publish:
 
     runs-on: ubuntu-latest
     permissions:
@@ -27,19 +27,35 @@ jobs:
       - name: Build & Test
         run: mvn -B -ntp clean verify
 
+      - name: Validate Docker Compose configuration
+        run: docker compose config
+
+      - name: Build Docker image
+        run: docker compose build app
+
       - name: Generate Documentation Site
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: mvn -B -ntp site -DskipTests
+        run: mvn -B -ntp site
+
+      - name: Assemble GitHub Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          rm -rf pages
+          mkdir -p pages/maven-site pages/coverage
+          cp -R docs/. pages/
+          cp -R target/site/. pages/maven-site/
+          cp -R target/site/jacoco/. pages/coverage/
 
       - name: Upload GitHub Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v5
         with:
-          path: target/site
+          path: pages
 
   deploy-pages:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: build-test-site
+    needs: verify-build-publish
 
     runs-on: ubuntu-latest
     concurrency:

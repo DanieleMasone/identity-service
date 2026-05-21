@@ -7,6 +7,7 @@ import com.dmasone.identity.api.generated.model.UserResponseV2;
 import com.dmasone.identity.api.generated.model.UserStatus;
 import com.dmasone.identity.infrastructure.exception.EmailAlreadyExistsException;
 import com.dmasone.identity.infrastructure.exception.GlobalExceptionHandler;
+import com.dmasone.identity.infrastructure.exception.UserNotFoundException;
 import com.dmasone.identity.service.UserServiceV2;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ValidatorFactory;
@@ -182,6 +183,24 @@ class UsersV2ControllerTest {
                 .andExpect(jsonPath("$.errors.firstName").exists());
 
         verify(userService, never()).updateUser(any(UUID.class), any(UpdateUserRequestV2.class));
+    }
+
+    @Test
+    void shouldReturnProblemDetailWhenUpdateTargetDoesNotExist() throws Exception {
+        UUID id = UUID.randomUUID();
+        when(userService.updateUser(any(UUID.class), any(UpdateUserRequestV2.class)))
+                .thenThrow(new UserNotFoundException("User not found"));
+
+        mockMvc.perform(patch("/v2/users/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "status", "INACTIVE"
+                        ))))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.title").value("User not found"))
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.detail").value("User not found"));
     }
 
     @Test

@@ -1,0 +1,14 @@
+.git
+.github
+.idea
+.m2
+.mvn
+.vs
+docs
+pages
+postman
+target
+.env
+*.log
+*.tmp
+*.temp

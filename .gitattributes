@@ -8,10 +8,6 @@
 # -------------------------
 *.java text eol=lf
 
-# Generated source code
-src/generated/openapi/** linguist-generated=true
-src/generated/mapstruct/** linguist-generated=true
-
 # Maven wrapper
 mvnw text eol=lf
 mvnw.cmd text eol=crlf
@@ -25,6 +21,7 @@ mvnw.cmd text eol=crlf
 *.xml text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
+.dockerignore text eol=lf
 Dockerfile text eol=lf
 
 # -------------------------
