@@ -121,6 +121,8 @@ target/site/jacoco/index.html
 target/site/jacoco/jacoco.xml
 ```
 
+Generated OpenAPI classes and generated MapStruct implementations are excluded from coverage.
+
 Generate the Maven documentation site after verification with:
 
 ```bash

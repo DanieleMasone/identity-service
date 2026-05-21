@@ -144,6 +144,8 @@ target/site/jacoco/index.html
 target/site/jacoco/jacoco.xml
 ```
 
+Generated OpenAPI classes and generated MapStruct implementations are excluded from coverage.
+
 The HTML report is also published by CI at:
 
 [https://danielemasone.github.io/identity-service/coverage/](https://danielemasone.github.io/identity-service/coverage/)
