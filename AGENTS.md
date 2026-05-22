@@ -140,6 +140,21 @@ Keep tests meaningful and behavior-focused:
 * repository and integration tests should use real PostgreSQL through Testcontainers
 * avoid empty context-load tests and tests without assertions
 
+## Codex Workflow
+
+This repository is structurally stable. Prefer small, focused changes that preserve the current architecture.
+
+* For backend behavior changes, update or add tests and run `mvn clean verify`.
+* For API behavior changes, update `src/main/resources/openapi/identity-api.yaml` first, then implementation, tests, README, and dashboard links if affected.
+* For Docker changes, run `docker compose config` and, when feasible, `docker compose up --build`.
+* For documentation-only changes, keep README, dashboard, Maven site references, and this guide consistent.
+* Do not add speculative abstractions, new frameworks, or machine-specific Codex configuration.
+* Prefer Spring Boot managed dependency versions unless a direct override is clearly justified and verified.
+
+## Quality Bar
+
+Keep the project compact, production-style, and recruiter-friendly: clear API contract, thin controllers, tested business behavior, real PostgreSQL integration tests, validated Docker runtime, generated coverage, and working GitHub Pages documentation.
+
 ## Do Not Edit Manually
 
 Do not manually edit:
