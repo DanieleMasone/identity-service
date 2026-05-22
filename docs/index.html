@@ -5,23 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Production-style Java identity service with OpenAPI, PostgreSQL, Docker, Testcontainers, CI and coverage reporting.">
     <title>Identity Service API</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
+    <a class="skip-link" href="#top">Skip to content</a>
     <header class="site-header">
       <a class="brand" href="#top" aria-label="Identity Service API home">
         <span class="brand-mark" aria-hidden="true">ID</span>
         <span>Identity Service API</span>
       </a>
-      <nav class="nav-links" aria-label="Primary navigation">
-        <a href="#architecture">Architecture</a>
-        <a href="#testing">Testing</a>
-        <a href="#coverage">Coverage</a>
-        <a href="#links">Links</a>
-      </nav>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Primary navigation">
+          <a href="#architecture">Architecture</a>
+          <a href="#testing">Testing</a>
+          <a href="#coverage">Coverage</a>
+          <a href="#links">Links</a>
+        </nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true">
+          <span>Dark mode</span>
+          <span class="theme-toggle-state">On</span>
+        </button>
+      </div>
     </header>
 
-    <main id="top">
+    <main id="top" tabindex="-1">
       <section class="hero">
         <div class="hero-content">
           <p class="eyebrow">Java 21 / Spring Boot 4 / PostgreSQL</p>
