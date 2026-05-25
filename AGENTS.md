@@ -129,7 +129,7 @@ Generate the Maven documentation site after verification with:
 mvn site
 ```
 
-GitHub Actions publishes the static dashboard from `docs/`, the Maven site under `/maven-site/`, and the JaCoCo HTML report under `/coverage/`. GitHub Pages must use `Source: GitHub Actions`.
+GitHub Actions publishes the static dashboard from `docs/`, the Maven site under `/maven-site/`, and the JaCoCo HTML report under `/coverage/` using the official Pages configure/upload/deploy actions. GitHub Pages must use `Source: GitHub Actions`.
 
 ## Testing Expectations
 

@@ -185,6 +185,7 @@ On pushes to `master`, after verification succeeds, CI also:
 
 * generates the Maven site with `mvn site`
 * assembles the static Pages artifact
+* configures GitHub Pages for Actions-based deployment
 * publishes the dashboard, Maven site and JaCoCo report to GitHub Pages
 
 The workflow fails if tests, integration tests, coverage generation, Docker Compose validation or Docker image build fail.
