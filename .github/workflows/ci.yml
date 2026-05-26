@@ -54,12 +54,12 @@ jobs:
           cp -R target/openapi-docs/. pages/openapi/
           rm -rf pages/openapi/.openapi-generator pages/openapi/.openapi-generator-ignore
           cp -R target/site/. pages/maven-site/
-          rm -rf pages/maven-site/jacoco
           cp -R target/site/jacoco/. pages/coverage/
           test -f pages/index.html
           test -f pages/openapi/index.html
           test -f pages/coverage/index.html
           test -f pages/maven-site/index.html
+          test -f pages/maven-site/jacoco/index.html
 
       - name: Configure GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

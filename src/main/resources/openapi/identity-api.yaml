@@ -4,6 +4,12 @@ info:
   title: Identity Service API
   description: API-first identity service with versioning and contract-driven design
   version: 2.0.0
+  contact:
+    name: Daniele Masone
+    url: https://github.com/DanieleMasone/identity-service
+  license:
+    name: MIT
+    url: https://github.com/DanieleMasone/identity-service/blob/master/LICENSE
 
 servers:
   - url: http://localhost:8080/api

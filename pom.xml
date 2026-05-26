@@ -331,7 +331,6 @@
                             <report>summary</report>
                             <report>plugins</report>
                             <report>ci-management</report>
-                            <report>licenses</report>
                             <report>scm</report>
                         </reports>
                     </reportSet>

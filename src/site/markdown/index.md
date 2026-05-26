@@ -22,8 +22,8 @@ published under `/maven-site/`.
 ## Generated Documentation
 
 * [JavaDoc](apidocs/index.html)
-* [JaCoCo Coverage](jacoco/index.html)
-* [Generated OpenAPI Docs](https://danielemasone.github.io/identity-service/openapi/)
+* [JaCoCo Coverage](../coverage/)
+* [Generated OpenAPI Docs](../openapi/)
 * [Project Summary](summary.html)
 * [Plugins](plugins.html)
 
@@ -36,11 +36,11 @@ published under `/maven-site/`.
 ## Source Links
 
 * [GitHub repository](https://github.com/DanieleMasone/identity-service)
-* [Generated OpenAPI docs](https://danielemasone.github.io/identity-service/openapi/)
+* [Generated OpenAPI docs](../openapi/)
 * [OpenAPI contract](https://github.com/DanieleMasone/identity-service/blob/master/src/main/resources/openapi/identity-api.yaml)
 * [Postman collection](https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json)
 * [CI/CD workflow](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml)
-* [Public dashboard](https://danielemasone.github.io/identity-service/)
+* [Public dashboard](../)
 
 ## Local API Documentation
 
