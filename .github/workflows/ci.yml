@@ -27,6 +27,13 @@ jobs:
       - name: Verify with Maven
         run: mvn -B -ntp clean verify
 
+      - name: Validate generated reports
+        shell: bash
+        run: |
+          test -f target/site/jacoco/index.html
+          test -f target/site/jacoco/jacoco.xml
+          test -f target/openapi-docs/index.html
+
       - name: Validate Docker Compose configuration
         run: docker compose config
 
@@ -42,12 +49,15 @@ jobs:
         shell: bash
         run: |
           rm -rf pages
-          mkdir -p pages/maven-site pages/coverage
+          mkdir -p pages/openapi pages/maven-site pages/coverage
           cp -R docs/. pages/
+          cp -R target/openapi-docs/. pages/openapi/
+          rm -rf pages/openapi/.openapi-generator pages/openapi/.openapi-generator-ignore
           cp -R target/site/. pages/maven-site/
           rm -rf pages/maven-site/jacoco
           cp -R target/site/jacoco/. pages/coverage/
           test -f pages/index.html
+          test -f pages/openapi/index.html
           test -f pages/coverage/index.html
           test -f pages/maven-site/index.html
 

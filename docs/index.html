@@ -46,7 +46,8 @@
             tests, Maven reporting, and GitHub Actions delivery.
           </p>
           <div class="hero-actions" aria-label="Project actions">
-            <a class="button primary" href="https://github.com/DanieleMasone/identity-service">GitHub Repository</a>
+            <a class="button primary" href="openapi/">OpenAPI Docs</a>
+            <a class="button" href="https://github.com/DanieleMasone/identity-service">GitHub Repository</a>
             <a class="button" href="coverage/">Coverage Report</a>
             <a class="button" href="maven-site/">Maven Site</a>
           </div>
@@ -102,7 +103,7 @@
           <h2>What the project demonstrates</h2>
         </div>
         <div class="feature-grid">
-          <article><h3>OpenAPI-first contract</h3><p>The YAML contract drives generated Spring MVC APIs.</p></article>
+          <article><h3>OpenAPI-first contract</h3><p>The YAML contract drives generated Spring MVC APIs and static API docs.</p></article>
           <article><h3>Generated interfaces/models</h3><p>OpenAPI and MapStruct outputs are produced during Maven builds.</p></article>
           <article><h3>v1/v2 APIs</h3><p>Versioned endpoints show backward-compatible API evolution.</p></article>
           <article><h3>MapStruct</h3><p>Compile-time DTO/domain mapping with strict unmapped-property checks.</p></article>
@@ -192,17 +193,18 @@
         <div class="link-grid">
           <a href="https://github.com/DanieleMasone/identity-service">GitHub repository</a>
           <a href="https://github.com/DanieleMasone/identity-service#readme">README</a>
+          <a href="openapi/">OpenAPI docs</a>
           <a href="https://github.com/DanieleMasone/identity-service/blob/master/src/main/resources/openapi/identity-api.yaml">OpenAPI YAML</a>
           <a href="https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json">Postman collection</a>
           <a href="https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml">GitHub Actions</a>
           <a href="coverage/">Coverage report</a>
           <a href="maven-site/">Maven site</a>
-          <a href="http://localhost:8080/api/swagger-ui.html">Local Swagger UI</a>
           <a href="https://github.com/DanieleMasone/identity-service/blob/master/LICENSE">License</a>
         </div>
         <p class="static-note">
-          GitHub Pages is static, so Swagger UI is available only after starting the service locally
-          with <code>docker compose up --build</code> or <code>mvn spring-boot:run</code>.
+          Public API documentation is generated from the OpenAPI YAML by Maven and published under
+          <code>/openapi/</code>. The Spring Boot Swagger UI remains a local-only runtime convenience
+          at <code>http://localhost:8080/api/swagger-ui.html</code>.
         </p>
       </section>
     </main>

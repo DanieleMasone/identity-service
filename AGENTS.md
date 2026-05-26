@@ -58,12 +58,15 @@ Expected generated locations:
 ```text
 target/generated-sources/openapi
 target/generated-sources/annotations
+target/openapi-docs
 ```
 
 Edit the source contract or mapper interfaces instead:
 
 * OpenAPI source: `src/main/resources/openapi/identity-api.yaml`
 * MapStruct source: `src/main/java/com/dmasone/identity/api/mapper/UserMapper.java`
+
+Maven also generates static OpenAPI HTML documentation from `identity-api.yaml` under `target/openapi-docs`; GitHub Pages publishes it at `/openapi/`. Do not manually edit generated OpenAPI documentation.
 
 ## Build And Test Commands
 
@@ -129,7 +132,7 @@ Generate the Maven documentation site after verification with:
 mvn site
 ```
 
-GitHub Actions publishes the static dashboard from `docs/`, the Maven site under `/maven-site/`, and the JaCoCo HTML report under `/coverage/` using the official Pages configure/upload/deploy actions. GitHub Pages must use `Source: GitHub Actions`.
+GitHub Actions publishes the static dashboard from `docs/`, generated OpenAPI HTML docs under `/openapi/`, the Maven site under `/maven-site/`, and the JaCoCo HTML report under `/coverage/` using the official Pages configure/upload/deploy actions. GitHub Pages must use `Source: GitHub Actions`.
 
 ## Testing Expectations
 
@@ -162,6 +165,7 @@ Do not manually edit:
 * `target/generated-sources/openapi/**`
 * `target/generated-sources/annotations/**`
 * generated OpenAPI models/interfaces
+* generated OpenAPI HTML documentation under `target/openapi-docs/**`
 * generated MapStruct implementations
 * Maven output under `target/`
 * assembled Pages output under `pages/`

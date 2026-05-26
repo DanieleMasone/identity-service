@@ -17,11 +17,11 @@ The project is intentionally compact, but it demonstrates practices expected in 
 | GitHub repository | [github.com/DanieleMasone/identity-service](https://github.com/DanieleMasone/identity-service) |
 | CI/CD workflow | [GitHub Actions](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml) |
 | Public dashboard | [GitHub Pages](https://danielemasone.github.io/identity-service/) |
+| OpenAPI docs | [Generated OpenAPI HTML documentation](https://danielemasone.github.io/identity-service/openapi/) |
 | OpenAPI contract | [identity-api.yaml](https://github.com/DanieleMasone/identity-service/blob/master/src/main/resources/openapi/identity-api.yaml) |
 | Postman collection | [identity-service.postman_collection.json](https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json) |
 | Coverage report | [Published JaCoCo report](https://danielemasone.github.io/identity-service/coverage/) |
 | Generated documentation site | [Maven site and JavaDoc](https://danielemasone.github.io/identity-service/maven-site/) |
-| Local Swagger UI | [http://localhost:8080/api/swagger-ui.html](http://localhost:8080/api/swagger-ui.html) |
 
 ## What It Demonstrates
 
@@ -73,9 +73,34 @@ Generated output:
 ```text
 target/generated-sources/openapi
 target/generated-sources/annotations
+target/openapi-docs
 ```
 
-Do not manually edit generated classes. OpenAPI Generator owns the API interfaces/models, and MapStruct owns mapper implementations.
+Do not manually edit generated classes or generated OpenAPI HTML documentation. OpenAPI Generator owns the API interfaces/models and the static API docs, while MapStruct owns mapper implementations.
+
+## OpenAPI Documentation
+
+The OpenAPI YAML contract is the source of truth:
+
+```text
+src/main/resources/openapi/identity-api.yaml
+```
+
+Maven generates static OpenAPI HTML documentation from that contract with OpenAPI Generator. Local output is written to:
+
+```text
+target/openapi-docs/index.html
+```
+
+CI publishes the generated documentation at:
+
+[https://danielemasone.github.io/identity-service/openapi/](https://danielemasone.github.io/identity-service/openapi/)
+
+GitHub Pages is static and cannot expose the running Spring Boot Swagger UI. Swagger UI remains available only when the application is running locally:
+
+```text
+http://localhost:8080/api/swagger-ui.html
+```
 
 ## Run Locally With Maven
 
@@ -98,13 +123,13 @@ DB_USERNAME=postgres
 DB_PASSWORD=postgres
 ```
 
-Swagger UI is available at:
+Local Swagger UI is available at:
 
 ```text
 http://localhost:8080/api/swagger-ui.html
 ```
 
-GitHub Pages is static and cannot expose the running Swagger UI directly. Start the application locally, then open the Swagger UI URL above. The published dashboard links to the source OpenAPI YAML and documents this local endpoint.
+Use the published OpenAPI docs for public API documentation. Start the application locally only when you want the live Spring Boot Swagger UI.
 
 ## Run With Docker Compose
 
@@ -162,12 +187,13 @@ No frontend framework is used. GitHub Actions publishes the dashboard as the Pag
 
 ```text
 /coverage/     JaCoCo HTML report
+/openapi/      Maven-generated OpenAPI HTML documentation
 /maven-site/   Maven site and JavaDoc
 ```
 
 GitHub Pages should be configured with `Source: GitHub Actions`.
 
-The dashboard is static. It can link to the OpenAPI contract, coverage report, Maven site and local Swagger UI instructions, but it does not run the backend service.
+The dashboard is static. It links to the generated OpenAPI docs, OpenAPI contract, coverage report and Maven site, but it does not run the backend service.
 
 ## CI/CD Workflow
 
@@ -186,9 +212,9 @@ On pushes to `master`, after verification succeeds, CI also:
 * generates the Maven site with `mvn site`
 * assembles the static Pages artifact
 * configures GitHub Pages for Actions-based deployment
-* publishes the dashboard, Maven site and JaCoCo report to GitHub Pages
+* publishes the dashboard, OpenAPI docs, Maven site and JaCoCo report to GitHub Pages
 
-The workflow fails if tests, integration tests, coverage generation, Docker Compose validation or Docker image build fail.
+The workflow fails if tests, integration tests, OpenAPI documentation generation, coverage generation, Docker Compose validation or Docker image build fail.
 
 ## Docker Notes
 
