@@ -147,10 +147,12 @@ Keep tests meaningful and behavior-focused:
 
 This repository is structurally stable. Prefer small, focused changes that preserve the current architecture.
 
+`README.md` is the concise project entry point. Detailed setup, runtime, testing, reporting, and troubleshooting instructions live in `docs/user-guide.md`.
+
 * For backend behavior changes, update or add tests and run `mvn clean verify`.
-* For API behavior changes, update `src/main/resources/openapi/identity-api.yaml` first, then implementation, tests, README, and dashboard links if affected.
+* For API behavior changes, update `src/main/resources/openapi/identity-api.yaml` first, then implementation, tests, README, user guide, and dashboard links if affected.
 * For Docker changes, run `docker compose config` and, when feasible, `docker compose up --build`.
-* For documentation-only changes, keep README, dashboard, Maven site references, and this guide consistent.
+* For documentation-only changes, keep README, `docs/user-guide.md`, dashboard, Maven site references, and this guide consistent.
 * Do not add speculative abstractions, new frameworks, or machine-specific Codex configuration.
 * Prefer Spring Boot managed dependency versions unless a direct override is clearly justified and verified.
 
@@ -181,4 +183,4 @@ Keep local and generated artifacts out of Git:
 * logs, temp files, local build artifacts
 * secrets or machine-specific configuration
 
-When changing behavior, update the OpenAPI contract, implementation, tests, README, dashboard, and this guide when they are affected.
+When changing behavior, update the OpenAPI contract, implementation, tests, README, user guide, dashboard, and this guide when they are affected.
