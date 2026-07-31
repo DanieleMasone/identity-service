@@ -5,9 +5,34 @@
     "description": "API-first Identity Service",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "00000000-0000-0000-0000-000000000000",
+      "type": "string"
+    }
+  ],
   "item": [
     {
       "name": "Create User V1",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('userId', pm.response.json().id);",
+              "}"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
@@ -15,14 +40,12 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\"\n}"
+          "raw": "{\n  \"email\": \"v1.user@example.com\",\n  \"password\": \"password123\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/v1/users",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "8080",
-          "path": ["api", "v1", "users"]
+          "raw": "{{baseUrl}}/v1/users",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "users"]
         }
       }
     },
@@ -31,16 +54,38 @@
       "request": {
         "method": "GET",
         "url": {
-          "raw": "http://localhost:8080/api/v1/users/{{userId}}",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "8080",
-          "path": ["api", "v1", "users", "{{userId}}"]
+          "raw": "{{baseUrl}}/v1/users/{{userId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "users", "{{userId}}"]
+        }
+      }
+    },
+    {
+      "name": "Delete User V1",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/v1/users/{{userId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["v1", "users", "{{userId}}"]
         }
       }
     },
     {
       "name": "Create User V2",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  pm.collectionVariables.set('userId', pm.response.json().id);",
+              "}"
+            ]
+          }
+        }
+      ],
       "request": {
         "method": "POST",
         "header": [
@@ -48,14 +93,23 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}"
+          "raw": "{\n  \"email\": \"v2.user@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/v2/users",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "8080",
-          "path": ["api", "v2", "users"]
+          "raw": "{{baseUrl}}/v2/users",
+          "host": ["{{baseUrl}}"],
+          "path": ["v2", "users"]
+        }
+      }
+    },
+    {
+      "name": "Get User V2",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/v2/users/{{userId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["v2", "users", "{{userId}}"]
         }
       }
     },
@@ -68,14 +122,12 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"firstName\": \"Updated\"\n}"
+          "raw": "{\n  \"firstName\": \"Updated\",\n  \"status\": \"SUSPENDED\"\n}"
         },
         "url": {
-          "raw": "http://localhost:8080/api/v2/users/{{userId}}",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "8080",
-          "path": ["api", "v2", "users", "{{userId}}"]
+          "raw": "{{baseUrl}}/v2/users/{{userId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["v2", "users", "{{userId}}"]
         }
       }
     }

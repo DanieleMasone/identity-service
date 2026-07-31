@@ -63,6 +63,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponseV1'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -75,6 +77,8 @@ paths:
       responses:
         '204':
           description: Deleted
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -119,6 +123,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserResponseV2'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -183,6 +189,7 @@ components:
           type: string
           format: email
           minLength: 1
+          maxLength: 255
         password:
           type: string
           minLength: 8
@@ -213,15 +220,18 @@ components:
           type: string
           format: email
           minLength: 1
+          maxLength: 255
         password:
           type: string
           minLength: 8
         firstName:
           type: string
           minLength: 1
+          maxLength: 100
         lastName:
           type: string
           minLength: 1
+          maxLength: 100
 
     UpdateUserRequestV2:
       type: object
@@ -229,9 +239,11 @@ components:
         firstName:
           type: string
           minLength: 1
+          maxLength: 100
         lastName:
           type: string
           minLength: 1
+          maxLength: 100
         status:
           $ref: '#/components/schemas/UserStatus'
 
@@ -285,6 +297,10 @@ components:
           type: string
         instance:
           type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: string
 
   ########################
   # RESPONSES

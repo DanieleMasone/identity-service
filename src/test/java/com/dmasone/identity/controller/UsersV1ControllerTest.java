@@ -110,6 +110,23 @@ class UsersV1ControllerTest {
     }
 
     @Test
+    void shouldRejectEmailLongerThanDatabaseColumn() throws Exception {
+        String oversizedEmail = "a".repeat(244) + "@example.com";
+
+        mockMvc.perform(post("/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "email", oversizedEmail,
+                                "password", "password123"
+                        ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.errors.email").exists());
+
+        verify(userService, never()).createUser(any(CreateUserRequestV1.class));
+    }
+
+    @Test
     void shouldReturnConflictWhenEmailAlreadyExists() throws Exception {
         when(userService.createUser(any(CreateUserRequestV1.class)))
                 .thenThrow(new EmailAlreadyExistsException("Email already exists"));

@@ -56,6 +56,7 @@ class UserServiceIT extends PostgresIntegrationTest {
         UserResponseV1 found = userService.getUserById(created.getId());
 
         assertThat(found.getEmail()).isEqualTo("test@test.com");
+        assertThat(found.getCreatedAt()).isEqualTo(created.getCreatedAt());
         assertThat(userRepository.findById(created.getId()))
                 .get()
                 .satisfies(user -> {
@@ -88,6 +89,11 @@ class UserServiceIT extends PostgresIntegrationTest {
         assertThat(found.getFirstName()).isEqualTo("Luigi");
         assertThat(found.getLastName()).isEqualTo("Verdi");
         assertThat(found.getStatus()).isEqualTo(UserStatus.SUSPENDED);
+        assertThat(found.getUpdatedAt()).isEqualTo(updated.getUpdatedAt());
+
+        UserResponseV2 unchanged = userServiceV2.updateUser(created.getId(), new UpdateUserRequestV2());
+
+        assertThat(unchanged.getUpdatedAt()).isEqualTo(updated.getUpdatedAt());
     }
 
     @Test
@@ -96,6 +102,7 @@ class UserServiceIT extends PostgresIntegrationTest {
 
         userService.deleteUser(created.getId());
 
+        assertThat(userService.getUserById(created.getId()).getStatus()).isEqualTo(UserStatus.INACTIVE);
         assertThat(userRepository.findById(created.getId()))
                 .get()
                 .extracting(User::getStatus)
@@ -115,7 +122,7 @@ class UserServiceIT extends PostgresIntegrationTest {
                 .isInstanceOf(EmailAlreadyExistsException.class)
                 .hasMessageContaining("Email already exists");
 
-        assertThat(userRepository.findByEmail("duplicate@test.com")).isPresent();
+        assertThat(userRepository.existsByEmail("duplicate@test.com")).isTrue();
         assertThat(userRepository.count()).isEqualTo(1);
     }
 

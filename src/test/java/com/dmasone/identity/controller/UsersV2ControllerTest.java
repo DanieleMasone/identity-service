@@ -137,6 +137,23 @@ class UsersV2ControllerTest {
     }
 
     @Test
+    void shouldRejectProfileFieldsLongerThanDatabaseColumns() throws Exception {
+        mockMvc.perform(post("/v2/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(Map.of(
+                                "email", "created@mail.com",
+                                "password", "password123",
+                                "firstName", "a".repeat(101),
+                                "lastName", "Rossi"
+                        ))))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("$.errors.firstName").exists());
+
+        verify(userService, never()).createUser(any(CreateUserRequestV2.class));
+    }
+
+    @Test
     void shouldGetUserById() throws Exception {
         UUID id = UUID.randomUUID();
         UserResponseV2 response = userResponse(id)

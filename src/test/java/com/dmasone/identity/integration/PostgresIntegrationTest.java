@@ -12,7 +12,10 @@ import org.testcontainers.utility.DockerImageName;
  * <p>Spring Boot runs the normal Flyway migration path against this container
  * before Hibernate validates the schema, matching the application startup path.</p>
  */
-@SpringBootTest
+@SpringBootTest(properties = {
+        "springdoc.api-docs.enabled=false",
+        "springdoc.swagger-ui.enabled=false"
+})
 abstract class PostgresIntegrationTest {
 
     private static final DockerImageName POSTGRES_IMAGE = DockerImageName.parse("postgres:16");

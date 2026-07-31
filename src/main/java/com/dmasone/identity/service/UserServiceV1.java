@@ -2,16 +2,28 @@ package com.dmasone.identity.service;
 
 import com.dmasone.identity.api.generated.model.CreateUserRequestV1;
 import com.dmasone.identity.api.generated.model.UserResponseV1;
+import com.dmasone.identity.api.mapper.UserMapper;
+import com.dmasone.identity.domain.model.User;
+import com.dmasone.identity.domain.model.UserStatus;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
 /**
- * Business contract for version 1 user operations.
+ * Version 1 user business operations.
  *
  * <p>Version 1 exposes a minimal stable API for user creation, lookup, and
  * soft deletion.</p>
  */
-public interface UserServiceV1 {
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class UserServiceV1 {
+
+    private final UserServiceSupport support;
+    private final UserMapper userMapper;
 
     /**
      * Creates a user from the version 1 API request.
@@ -19,7 +31,10 @@ public interface UserServiceV1 {
      * @param request generated request model validated by the API layer
      * @return generated response model for the created user
      */
-    UserResponseV1 createUser(CreateUserRequestV1 request);
+    public UserResponseV1 createUser(CreateUserRequestV1 request) {
+        User user = userMapper.toEntity(request);
+        return userMapper.toV1(support.create(user, request.getPassword()));
+    }
 
     /**
      * Loads a user by identifier.
@@ -27,12 +42,19 @@ public interface UserServiceV1 {
      * @param id user identifier parsed from the request path
      * @return generated response model for the found user
      */
-    UserResponseV1 getUserById(UUID id);
+    @Transactional(readOnly = true)
+    public UserResponseV1 getUserById(UUID id) {
+        return userMapper.toV1(support.getRequired(id));
+    }
 
     /**
      * Soft-deletes a user by marking the account as inactive.
      *
      * @param id user identifier parsed from the request path
      */
-    void deleteUser(UUID id);
+    public void deleteUser(UUID id) {
+        User user = support.getRequired(id);
+        user.setStatus(UserStatus.INACTIVE);
+        support.saveChanged(user);
+    }
 }

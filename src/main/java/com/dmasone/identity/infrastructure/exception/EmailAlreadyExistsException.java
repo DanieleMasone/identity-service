@@ -13,4 +13,14 @@ public class EmailAlreadyExistsException extends RuntimeException {
     public EmailAlreadyExistsException(String message) {
         super(message);
     }
+
+    /**
+     * Creates the exception while retaining the database conflict that caused it.
+     *
+     * @param message explanation returned by the global exception handler
+     * @param cause underlying persistence failure
+     */
+    public EmailAlreadyExistsException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

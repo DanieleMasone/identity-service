@@ -99,6 +99,11 @@ For local setup, Docker usage, testing, coverage, OpenAPI documentation and CI/C
 * Deletes are soft deletes through the `INACTIVE` status.
 * API models are generated from OpenAPI; domain entities remain internal.
 * MapStruct is configured to fail on unmapped target properties, making DTO drift visible during compilation.
+* PostgreSQL owns email uniqueness; service logic translates both pre-checks and constraint races into the documented `409` response.
+
+## Project Status
+
+Feature-complete within the documented v1/v2 identity-management scope. The standard acceptance gate is `mvn clean verify`, with Docker image and Compose validation in CI.
 
 ## License
 

@@ -3,13 +3,14 @@ package com.dmasone.identity.integration;
 import com.dmasone.identity.domain.model.User;
 import com.dmasone.identity.domain.model.UserStatus;
 import com.dmasone.identity.domain.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.Instant;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -22,34 +23,32 @@ class UserRepositoryIT extends PostgresIntegrationTest {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    EntityManager entityManager;
+
+    @Autowired
+    JdbcTemplate jdbcTemplate;
+
     @BeforeEach
     void cleanDatabase() {
         userRepository.deleteAll();
     }
 
     @Test
-    void shouldFindUserByEmail() {
-        User saved = userRepository.saveAndFlush(user("repository@test.com", UserStatus.ACTIVE));
+    void shouldRoundTripDomainFieldsAndTimestamps() {
+        User saved = userRepository.saveAndFlush(user("repository@test.com", UserStatus.SUSPENDED));
+        entityManager.clear();
 
-        assertThat(userRepository.findByEmail("repository@test.com"))
+        assertThat(userRepository.findById(saved.getId()))
                 .get()
-                .extracting(User::getId)
-                .isEqualTo(saved.getId());
-        assertThat(userRepository.existsByEmail("repository@test.com")).isTrue();
-        assertThat(userRepository.existsByEmail("missing@test.com")).isFalse();
-    }
-
-    @Test
-    void shouldFindUsersByStatus() {
-        User active = userRepository.save(user("active@test.com", UserStatus.ACTIVE));
-        userRepository.save(user("inactive@test.com", UserStatus.INACTIVE));
-        userRepository.flush();
-
-        List<User> activeUsers = userRepository.findAllByStatus(UserStatus.ACTIVE);
-
-        assertThat(activeUsers)
-                .extracting(User::getId)
-                .containsExactly(active.getId());
+                .satisfies(reloaded -> {
+                    assertThat(reloaded.getEmail()).isEqualTo("repository@test.com");
+                    assertThat(reloaded.getFirstName()).isEqualTo("Test");
+                    assertThat(reloaded.getLastName()).isEqualTo("User");
+                    assertThat(reloaded.getStatus()).isEqualTo(UserStatus.SUSPENDED);
+                    assertThat(reloaded.getCreatedAt()).isEqualTo(Instant.parse("2026-05-21T10:00:00Z"));
+                    assertThat(reloaded.getUpdatedAt()).isEqualTo(Instant.parse("2026-05-21T10:00:00Z"));
+                });
     }
 
     @Test
@@ -58,6 +57,17 @@ class UserRepositoryIT extends PostgresIntegrationTest {
 
         assertThatThrownBy(() -> userRepository.saveAndFlush(user("unique@test.com", UserStatus.ACTIVE)))
                 .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void shouldEnforceUserStatusConstraint() {
+        User saved = userRepository.saveAndFlush(user("status@test.com", UserStatus.ACTIVE));
+
+        assertThatThrownBy(() -> jdbcTemplate.update(
+                "UPDATE users SET status = ? WHERE id = ?",
+                "UNKNOWN",
+                saved.getId()
+        )).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     private User user(String email, UserStatus status) {

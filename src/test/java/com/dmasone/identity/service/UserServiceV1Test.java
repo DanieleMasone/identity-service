@@ -15,9 +15,12 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -36,7 +39,7 @@ import static org.mockito.Mockito.when;
  * deletion.</p>
  */
 @ExtendWith(MockitoExtension.class)
-class UserServiceV1ImplTest {
+class UserServiceV1Test {
 
     @Mock
     private UserRepository userRepository;
@@ -47,10 +50,9 @@ class UserServiceV1ImplTest {
     @BeforeEach
     void setUp() {
         passwordEncoder = new BCryptPasswordEncoder(4);
-        userService = new UserServiceV1Impl(
-                userRepository,
-                Mappers.getMapper(UserMapper.class),
-                passwordEncoder
+        userService = new UserServiceV1(
+                new UserServiceSupport(userRepository, passwordEncoder),
+                Mappers.getMapper(UserMapper.class)
         );
     }
 
@@ -58,7 +60,7 @@ class UserServiceV1ImplTest {
     void shouldCreateUser() {
         CreateUserRequestV1 request = new CreateUserRequestV1("test@mail.com", "password123");
 
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+        when(userRepository.saveAndFlush(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);
             user.setId(UUID.randomUUID());
             return user;
@@ -71,7 +73,7 @@ class UserServiceV1ImplTest {
         assertThat(response.getStatus()).isEqualTo(UserStatus.ACTIVE);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(userCaptor.capture());
+        verify(userRepository).saveAndFlush(userCaptor.capture());
 
         User saved = userCaptor.getValue();
         assertThat(saved.getCreatedAt()).isNotNull();
@@ -89,7 +91,36 @@ class UserServiceV1ImplTest {
                 .isInstanceOf(EmailAlreadyExistsException.class)
                 .hasMessageContaining("Email already exists");
 
-        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, never()).saveAndFlush(any(User.class));
+    }
+
+    @Test
+    void shouldTranslateConcurrentUniqueEmailConflict() {
+        CreateUserRequestV1 request = new CreateUserRequestV1("race@mail.com", "password123");
+        DataIntegrityViolationException conflict = new DataIntegrityViolationException(
+                "unique email",
+                new SQLException("duplicate key", "23505")
+        );
+
+        when(userRepository.saveAndFlush(any(User.class))).thenThrow(conflict);
+
+        assertThatThrownBy(() -> userService.createUser(request))
+                .isInstanceOf(EmailAlreadyExistsException.class)
+                .hasMessage("Email already exists")
+                .hasCause(conflict);
+    }
+
+    @Test
+    void shouldNotMaskUnrelatedPersistenceFailures() {
+        CreateUserRequestV1 request = new CreateUserRequestV1("invalid@mail.com", "password123");
+        DataIntegrityViolationException failure = new DataIntegrityViolationException(
+                "not-null violation",
+                new SQLException("missing value", "23502")
+        );
+
+        when(userRepository.saveAndFlush(any(User.class))).thenThrow(failure);
+
+        assertThatThrownBy(() -> userService.createUser(request)).isSameAs(failure);
     }
 
     @Test
@@ -99,8 +130,8 @@ class UserServiceV1ImplTest {
                 .id(id)
                 .email("find@mail.com")
                 .status(com.dmasone.identity.domain.model.UserStatus.ACTIVE)
-                .createdAt(java.time.Instant.now())
-                .updatedAt(java.time.Instant.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
 
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
@@ -123,12 +154,13 @@ class UserServiceV1ImplTest {
     @Test
     void shouldSoftDeleteUser() {
         UUID id = UUID.randomUUID();
+        Instant previousUpdate = Instant.parse("2026-01-01T00:00:00Z");
         User user = User.builder()
                 .id(id)
                 .email("delete@mail.com")
                 .status(com.dmasone.identity.domain.model.UserStatus.ACTIVE)
-                .createdAt(java.time.Instant.now())
-                .updatedAt(java.time.Instant.now())
+                .createdAt(previousUpdate)
+                .updatedAt(previousUpdate)
                 .build();
 
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
@@ -137,6 +169,7 @@ class UserServiceV1ImplTest {
         userService.deleteUser(id);
 
         assertThat(user.getStatus()).isEqualTo(com.dmasone.identity.domain.model.UserStatus.INACTIVE);
+        assertThat(user.getUpdatedAt()).isAfter(previousUpdate);
         verify(userRepository).save(user);
     }
 

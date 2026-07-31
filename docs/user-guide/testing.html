@@ -49,9 +49,9 @@
           <section>
             <h2>Test layers</h2>
             <div class="guide-summary-grid">
-              <article class="guide-card"><h3>Service tests</h3><p><code>UserServiceV1ImplTest</code> and <code>UserServiceV2ImplTest</code> exercise business rules and collaborations in isolation.</p></article>
+              <article class="guide-card"><h3>Service tests</h3><p><code>UserServiceV1Test</code> and <code>UserServiceV2Test</code> exercise business rules and collaborations in isolation.</p></article>
               <article class="guide-card"><h3>Controller tests</h3><p><code>UsersV1ControllerTest</code> and <code>UsersV2ControllerTest</code> use MockMvc to verify HTTP behavior, payloads, validation, and error translation.</p></article>
-              <article class="guide-card"><h3>Repository integration</h3><p><code>UserRepositoryIT</code> verifies persistence and queries against containerized PostgreSQL.</p></article>
+              <article class="guide-card"><h3>Repository integration</h3><p><code>UserRepositoryIT</code> verifies field round trips and database constraints against containerized PostgreSQL.</p></article>
               <article class="guide-card"><h3>Application integration</h3><p><code>UserServiceIT</code> loads the Spring context, applies Flyway migrations, and verifies complete persistence-backed flows.</p></article>
             </div>
           </section>
@@ -63,6 +63,7 @@
               <li>Patch v2 profile and status fields.</li>
               <li>Soft-delete a v1 user by transitioning it to <code>INACTIVE</code>.</li>
               <li>Reject duplicate email addresses with a conflict response.</li>
+              <li>Preserve the conflict response when concurrent inserts reach the database uniqueness constraint.</li>
               <li>Return a not-found response for unknown user identifiers.</li>
               <li>Reject invalid request bodies and malformed inputs where applicable.</li>
               <li>Hash passwords before persistence rather than storing the submitted value.</li>

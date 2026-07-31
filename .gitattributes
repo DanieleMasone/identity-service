@@ -42,9 +42,3 @@ Dockerfile text eol=lf
 *.html text eol=lf
 *.css text eol=lf
 *.js text eol=lf
-
-# -------------------------
-# Gradle/Maven wrapper safety
-# -------------------------
-gradlew text eol=lf
-gradlew.bat text eol=crlf

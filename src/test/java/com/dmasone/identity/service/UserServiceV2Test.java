@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
  * partial updates, duplicate email protection, and password hashing.</p>
  */
 @ExtendWith(MockitoExtension.class)
-class UserServiceV2ImplTest {
+class UserServiceV2Test {
 
     @Mock
     private UserRepository userRepository;
@@ -48,10 +48,9 @@ class UserServiceV2ImplTest {
     @BeforeEach
     void setUp() {
         passwordEncoder = new BCryptPasswordEncoder(4);
-        userService = new UserServiceV2Impl(
-                userRepository,
-                Mappers.getMapper(UserMapper.class),
-                passwordEncoder
+        userService = new UserServiceV2(
+                new UserServiceSupport(userRepository, passwordEncoder),
+                Mappers.getMapper(UserMapper.class)
         );
     }
 
@@ -64,7 +63,7 @@ class UserServiceV2ImplTest {
                 "Rossi"
         );
 
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
+        when(userRepository.saveAndFlush(any(User.class))).thenAnswer(invocation -> {
             User user = invocation.getArgument(0);
             user.setId(UUID.randomUUID());
             return user;
@@ -79,7 +78,7 @@ class UserServiceV2ImplTest {
         assertThat(response.getStatus()).isEqualTo(UserStatus.ACTIVE);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(userCaptor.capture());
+        verify(userRepository).saveAndFlush(userCaptor.capture());
 
         User saved = userCaptor.getValue();
         assertThat(saved.getFirstName()).isEqualTo("Mario");
@@ -106,7 +105,7 @@ class UserServiceV2ImplTest {
                 .isInstanceOf(EmailAlreadyExistsException.class)
                 .hasMessageContaining("Email already exists");
 
-        verify(userRepository, never()).save(any(User.class));
+        verify(userRepository, never()).saveAndFlush(any(User.class));
     }
 
     @Test
@@ -174,6 +173,22 @@ class UserServiceV2ImplTest {
         assertThat(user.getFirstName()).isEqualTo("Luigi");
         assertThat(user.getLastName()).isEqualTo("Rossi");
         assertThat(user.getStatus()).isEqualTo(com.dmasone.identity.domain.model.UserStatus.ACTIVE);
+    }
+
+    @Test
+    void shouldTreatEmptyUpdateAsNoOp() {
+        UUID id = UUID.randomUUID();
+        User user = buildUser(id);
+        Instant previousUpdate = user.getUpdatedAt();
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(user));
+
+        UserResponseV2 unchanged = userService.updateUser(id, new UpdateUserRequestV2());
+
+        assertThat(unchanged.getFirstName()).isEqualTo("Mario");
+        assertThat(unchanged.getLastName()).isEqualTo("Rossi");
+        assertThat(user.getUpdatedAt()).isEqualTo(previousUpdate);
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test

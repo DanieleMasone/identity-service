@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
@@ -58,6 +58,7 @@ jobs:
           cp -R target/openapi-docs/. pages/openapi/
           rm -rf pages/openapi/.openapi-generator pages/openapi/.openapi-generator-ignore
           cp -R target/site/. pages/maven-site/
+          rm -rf pages/maven-site/jacoco
           cp -R target/site/jacoco/. pages/coverage/
           test -f pages/index.html
           required_guide_pages=(index.html getting-started.html docker.html api-documentation.html testing.html coverage.html ci-cd.html troubleshooting.html)
@@ -67,7 +68,6 @@ jobs:
           test -f pages/openapi/index.html
           test -f pages/coverage/index.html
           test -f pages/maven-site/index.html
-          test -f pages/maven-site/jacoco/index.html
 
       - name: Configure GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

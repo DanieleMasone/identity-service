@@ -11,24 +11,15 @@ spring:
     url: jdbc:postgresql://localhost:5432/identity_db
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
-    driver-class-name: org.postgresql.Driver
 
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: validate
     show-sql: false
-    properties:
-      hibernate:
-        format_sql: true
 
   flyway:
     enabled: true
-    baseline-on-migrate: true
-
-logging:
-  level:
-    org.hibernate.SQL: INFO
 
 springdoc:
   swagger-ui:
