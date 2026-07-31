@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Troubleshooting Docker, Testcontainers, Flyway, generated sources, Swagger UI, and GitHub Pages for Identity Service.">
+    <title>Troubleshooting | Identity Service User Guide</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="guide-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Identity Service dashboard"><span class="brand-mark" aria-hidden="true">ID</span><span>Identity Service API</span></a>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Documentation navigation"><a href="../">Dashboard</a><a href="./">Guide home</a><a href="../openapi/">OpenAPI</a><a href="https://github.com/DanieleMasone/identity-service">GitHub</a></nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span>Dark mode</span><span class="theme-toggle-state">On</span></button>
+      </div>
+    </header>
+
+    <main id="main-content" class="guide-main" tabindex="-1">
+      <header class="guide-hero">
+        <p class="breadcrumb"><a href="../">Dashboard</a><span aria-hidden="true">/</span><a href="./">User Guide</a><span aria-hidden="true">/</span><span>Troubleshooting</span></p>
+        <p class="eyebrow">Problem diagnosis</p>
+        <h1>Troubleshooting</h1>
+        <p class="guide-lead">Start with the failing boundary: Docker, database migration, Maven generation, local runtime, or Pages deployment.</p>
+      </header>
+
+      <div class="guide-layout">
+        <aside class="guide-sidebar">
+          <nav class="guide-nav" aria-label="User Guide sections"><h2>Guide sections</h2><ul>
+            <li><a href="./">Overview</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="docker.html">Docker usage</a></li>
+            <li><a href="api-documentation.html">API documentation</a></li><li><a href="testing.html">Testing</a></li><li><a href="coverage.html">Coverage</a></li>
+            <li><a href="ci-cd.html">CI/CD and generated docs</a></li><li><a href="troubleshooting.html" aria-current="page">Troubleshooting</a></li>
+          </ul></nav>
+        </aside>
+
+        <article class="guide-content">
+          <section>
+            <h2>Docker and PostgreSQL</h2>
+            <h3>Docker daemon unavailable</h3>
+            <p>If Maven reports that no valid Docker environment was found, start Docker Desktop or the Docker Engine and confirm access:</p>
+            <pre class="command-block"><code>docker version
+docker info</code></pre>
+            <p>Retry only after both client and server information are available.</p>
+
+            <h3>Port 5432 already in use</h3>
+            <p>The Compose file intentionally publishes PostgreSQL on the standard host port <code>5432</code>. Stop the other local PostgreSQL service or container, then rerun <code>docker compose up</code>. Use <code>docker ps</code> to identify containers publishing that port.</p>
+
+            <h3>Database does not become healthy</h3>
+            <p>Inspect the database logs and the resolved Compose configuration:</p>
+            <pre class="command-block"><code>docker compose config
+docker compose logs db</code></pre>
+            <p>Check that <code>DB_USERNAME</code> and <code>DB_PASSWORD</code> are consistent for both services.</p>
+          </section>
+
+          <section>
+            <h2>Tests and migrations</h2>
+            <h3>Testcontainers startup failure</h3>
+            <p>Confirm the Docker daemon is reachable, allow the first PostgreSQL image pull to finish, and inspect <code>target/failsafe-reports</code>. Run Maven with stack traces when more context is needed:</p>
+            <pre class="command-block"><code>mvn -e clean verify</code></pre>
+            <p>Do not point integration tests at a local PostgreSQL instance; the suite is designed to own its container lifecycle.</p>
+
+            <h3>Flyway validation failure</h3>
+            <p>Do not edit a migration that may already have been applied. Verify the migration filenames and checksums, then add a new versioned migration for schema changes. For disposable local Compose state, remove and recreate the containers:</p>
+            <pre class="command-block"><code>docker compose down
+docker compose up --build</code></pre>
+            <div class="callout warning"><p>This recreation removes the current local database state because the Compose file has no persistent database volume.</p></div>
+          </section>
+
+          <section>
+            <h2>Generated sources and stale builds</h2>
+            <h3>Generated OpenAPI classes are missing</h3>
+            <p>Run the lifecycle phase that owns source generation:</p>
+            <pre class="command-block"><code>mvn clean compile</code></pre>
+            <p>Confirm output exists under <code>target/generated-sources/openapi</code>. Do not copy generated classes into <code>src/main/java</code>.</p>
+
+            <h3>MapStruct implementation is missing</h3>
+            <p>Use JDK 21 and run <code>mvn clean compile</code>. The implementation should appear under <code>target/generated-sources/annotations</code>. If the command succeeds but the IDE still reports an error, reload the Maven project so generated source roots are recognized.</p>
+
+            <h3>Stale Maven output causes inconsistent behavior</h3>
+            <p>Remove old generated output through the normal clean lifecycle and rerun the full gate:</p>
+            <pre class="command-block"><code>mvn clean verify</code></pre>
+            <p>Never repair files under <code>target/</code> manually; the next clean build will replace them.</p>
+          </section>
+
+          <section>
+            <h2>Local and published documentation</h2>
+            <h3>Local Swagger UI is unavailable</h3>
+            <p>Confirm the application completed startup and use the context-path-aware URL:</p>
+            <pre class="command-block"><code>http://localhost:8080/api/swagger-ui.html</code></pre>
+            <p>The public Pages URL does not host Swagger UI. Use the static <a href="../openapi/">OpenAPI documentation</a> when the backend is not running locally.</p>
+
+            <h3>Generated OpenAPI or Maven site is missing locally</h3>
+            <p>Generate contract documentation during verification, then the Maven site:</p>
+            <pre class="command-block"><code>mvn clean verify
+mvn site</code></pre>
+            <p>Check <code>target/openapi-docs/index.html</code> and <code>target/site/index.html</code>.</p>
+
+            <h3>GitHub Pages links are not updated</h3>
+            <ol>
+              <li>Confirm the change was pushed to <code>master</code>.</li>
+              <li>Check the <a href="https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml">CI/CD workflow</a> and its <code>deploy-pages</code> job.</li>
+              <li>Confirm repository Pages settings use <strong>GitHub Actions</strong> as the source.</li>
+              <li>Wait for deployment to complete, then refresh the page without the browser cache.</li>
+            </ol>
+            <p>Pull requests verify documentation inputs but do not publish a preview deployment.</p>
+          </section>
+
+          <section>
+            <h2>Still investigating?</h2>
+            <p>Use the narrowest generated report or log that matches the failure:</p>
+            <ul class="resource-list">
+              <li><a href="../openapi/">OpenAPI reference</a></li><li><a href="../coverage/">JaCoCo report</a></li>
+              <li><a href="../maven-site/">Maven site</a></li><li><a href="https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml">GitHub Actions runs</a></li>
+            </ul>
+          </section>
+
+          <nav class="page-nav" aria-label="Guide page navigation">
+            <a href="ci-cd.html"><small>Previous</small><strong>CI/CD and generated docs</strong></a>
+            <a href="./"><small>Return to</small><strong>User Guide overview</strong></a>
+          </nav>
+        </article>
+      </div>
+    </main>
+    <footer class="site-footer"><div class="guide-footer-links"><a href="../">Dashboard</a><a href="../openapi/">OpenAPI</a><a href="../coverage/">Coverage</a></div><span id="build-year">Identity Service User Guide.</span></footer>
+    <script src="../script.js"></script>
+  </body>
+</html>

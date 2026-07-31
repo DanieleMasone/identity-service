@@ -162,6 +162,9 @@
                             <generatorName>html2</generatorName>
                             <output>${generated.openapi.docs.dir}</output>
                             <cleanupOutput>true</cleanupOutput>
+                            <configOptions>
+                                <infoEmail>https://github.com/DanieleMasone/identity-service/issues</infoEmail>
+                            </configOptions>
                         </configuration>
                     </execution>
                 </executions>

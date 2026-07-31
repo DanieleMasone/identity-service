@@ -2,9 +2,8 @@
 
 [![CI/CD](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/temurin/releases/?version=21)
-[![Spring Boot 4.0.6](https://img.shields.io/badge/Spring%20Boot-4.0.6-6DB33F.svg)](https://spring.io/projects/spring-boot)
 [![Dashboard](https://img.shields.io/badge/dashboard-GitHub%20Pages-222222.svg)](https://danielemasone.github.io/identity-service/)
+[![User Guide](https://img.shields.io/badge/docs-User%20Guide-087568.svg)](https://danielemasone.github.io/identity-service/user-guide/)
 
 Production-style backend service for user identity management, built with Java 21, Spring Boot 4, PostgreSQL, Flyway, OpenAPI Generator, MapStruct, Testcontainers, Docker Compose and GitHub Actions.
 
@@ -17,7 +16,7 @@ The project is intentionally compact, but it demonstrates practices expected in 
 | GitHub repository | [github.com/DanieleMasone/identity-service](https://github.com/DanieleMasone/identity-service) |
 | CI/CD workflow | [GitHub Actions](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml) |
 | Public dashboard | [GitHub Pages](https://danielemasone.github.io/identity-service/) |
-| User guide | [Local setup and operations](docs/user-guide.md) |
+| User guide | [Setup, runtime, testing, and delivery](https://danielemasone.github.io/identity-service/user-guide/) |
 | OpenAPI docs | [Generated OpenAPI HTML documentation](https://danielemasone.github.io/identity-service/openapi/) |
 | OpenAPI contract | [identity-api.yaml](https://github.com/DanieleMasone/identity-service/blob/master/src/main/resources/openapi/identity-api.yaml) |
 | Postman collection | [identity-service.postman_collection.json](https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json) |
@@ -80,7 +79,7 @@ The API base URL is `http://localhost:8080/api`.
 
 For local setup, Docker usage, testing, coverage, OpenAPI documentation and CI/CD details, see:
 
-[User Guide](docs/user-guide.md)
+[User Guide](https://danielemasone.github.io/identity-service/user-guide/)
 
 ## API Overview
 

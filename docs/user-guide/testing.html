@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Unit, web-layer, repository, and Testcontainers integration testing for Identity Service.">
+    <title>Testing | Identity Service User Guide</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="guide-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Identity Service dashboard"><span class="brand-mark" aria-hidden="true">ID</span><span>Identity Service API</span></a>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Documentation navigation"><a href="../">Dashboard</a><a href="./">Guide home</a><a href="../openapi/">OpenAPI</a><a href="https://github.com/DanieleMasone/identity-service">GitHub</a></nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span>Dark mode</span><span class="theme-toggle-state">On</span></button>
+      </div>
+    </header>
+
+    <main id="main-content" class="guide-main" tabindex="-1">
+      <header class="guide-hero">
+        <p class="breadcrumb"><a href="../">Dashboard</a><span aria-hidden="true">/</span><a href="./">User Guide</a><span aria-hidden="true">/</span><span>Testing</span></p>
+        <p class="eyebrow">Automated verification</p>
+        <h1>Testing</h1>
+        <p class="guide-lead">Run the complete Maven gate and understand which behaviors are checked at each test layer.</p>
+      </header>
+
+      <div class="guide-layout">
+        <aside class="guide-sidebar">
+          <nav class="guide-nav" aria-label="User Guide sections"><h2>Guide sections</h2><ul>
+            <li><a href="./">Overview</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="docker.html">Docker usage</a></li>
+            <li><a href="api-documentation.html">API documentation</a></li><li><a href="testing.html" aria-current="page">Testing</a></li><li><a href="coverage.html">Coverage</a></li>
+            <li><a href="ci-cd.html">CI/CD and generated docs</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li>
+          </ul></nav>
+        </aside>
+
+        <article class="guide-content">
+          <section>
+            <h2>Primary validation command</h2>
+            <pre class="command-block"><code>mvn clean verify</code></pre>
+            <p>This command regenerates OpenAPI and MapStruct sources, compiles the application, runs unit and web-layer tests, executes PostgreSQL integration tests through Maven Failsafe, packages the service, and generates JaCoCo reports.</p>
+            <div class="callout warning"><p>Docker must be running before verification because the integration suite starts a real PostgreSQL container. Skipped-test commands are not the standard validation path.</p></div>
+          </section>
+
+          <section>
+            <h2>Test layers</h2>
+            <div class="guide-summary-grid">
+              <article class="guide-card"><h3>Service tests</h3><p><code>UserServiceV1ImplTest</code> and <code>UserServiceV2ImplTest</code> exercise business rules and collaborations in isolation.</p></article>
+              <article class="guide-card"><h3>Controller tests</h3><p><code>UsersV1ControllerTest</code> and <code>UsersV2ControllerTest</code> use MockMvc to verify HTTP behavior, payloads, validation, and error translation.</p></article>
+              <article class="guide-card"><h3>Repository integration</h3><p><code>UserRepositoryIT</code> verifies persistence and queries against containerized PostgreSQL.</p></article>
+              <article class="guide-card"><h3>Application integration</h3><p><code>UserServiceIT</code> loads the Spring context, applies Flyway migrations, and verifies complete persistence-backed flows.</p></article>
+            </div>
+          </section>
+
+          <section>
+            <h2>Covered behavior</h2>
+            <ul>
+              <li>Create and retrieve users through v1 and v2 contracts.</li>
+              <li>Patch v2 profile and status fields.</li>
+              <li>Soft-delete a v1 user by transitioning it to <code>INACTIVE</code>.</li>
+              <li>Reject duplicate email addresses with a conflict response.</li>
+              <li>Return a not-found response for unknown user identifiers.</li>
+              <li>Reject invalid request bodies and malformed inputs where applicable.</li>
+              <li>Hash passwords before persistence rather than storing the submitted value.</li>
+              <li>Apply the real Flyway schema before JPA validation.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Testcontainers behavior</h2>
+            <p><code>PostgresIntegrationTest</code> provides the shared PostgreSQL container configuration. Dynamic Spring properties point the application context at the container's mapped JDBC port, so tests do not depend on a locally installed database or the Compose <code>db</code> service.</p>
+            <p>Testcontainers needs access to the Docker daemon and may pull the PostgreSQL image on the first run. Subsequent executions generally reuse the local image cache.</p>
+          </section>
+
+          <section>
+            <h2>Conventions for new tests</h2>
+            <ul>
+              <li>Assert observable behavior, status codes, response bodies, persisted state, and business outcomes.</li>
+              <li>Keep controller tests focused on HTTP boundaries and service tests focused on business behavior.</li>
+              <li>Use PostgreSQL Testcontainers when database semantics or migrations matter.</li>
+              <li>Do not add empty context-load tests, assertion-free tests, or duplicate permutations only to raise coverage.</li>
+              <li>Name integration tests with the <code>*IT</code> suffix so Maven Failsafe executes them during <code>verify</code>.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Reports after verification</h2>
+            <ul>
+              <li>Unit test reports: <code>target/surefire-reports</code></li>
+              <li>Integration test reports: <code>target/failsafe-reports</code></li>
+              <li>JaCoCo HTML report: <code>target/site/jacoco/index.html</code></li>
+              <li>JaCoCo XML report: <code>target/site/jacoco/jacoco.xml</code></li>
+            </ul>
+          </section>
+
+          <nav class="page-nav" aria-label="Guide page navigation">
+            <a href="api-documentation.html"><small>Previous</small><strong>API documentation</strong></a>
+            <a href="coverage.html"><small>Next</small><strong>Coverage</strong></a>
+          </nav>
+        </article>
+      </div>
+    </main>
+    <footer class="site-footer"><div class="guide-footer-links"><a href="../">Dashboard</a><a href="../openapi/">OpenAPI</a><a href="../coverage/">Coverage</a></div><span id="build-year">Identity Service User Guide.</span></footer>
+    <script src="../script.js"></script>
+  </body>
+</html>

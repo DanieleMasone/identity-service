@@ -132,7 +132,20 @@ Generate the Maven documentation site after verification with:
 mvn site
 ```
 
-GitHub Actions publishes the static dashboard from `docs/`, generated OpenAPI HTML docs under `/openapi/`, the Maven site under `/maven-site/`, and the JaCoCo HTML report under `/coverage/` using the official Pages configure/upload/deploy actions. GitHub Pages must use `Source: GitHub Actions`.
+Documentation ownership and public paths are:
+
+```text
+README.md                         concise repository entry point
+docs/index.html                  public dashboard source (/)
+docs/user-guide/*.html           public User Guide source (/user-guide/)
+target/openapi-docs              generated OpenAPI HTML (/openapi/)
+target/site/jacoco               generated coverage (/coverage/)
+target/site                      generated Maven site (/maven-site/)
+```
+
+The dashboard and User Guide are direct static HTML sources and reuse `docs/styles.css` and `docs/script.js`. Keep them responsive, keyboard accessible, and usable without JavaScript for content or navigation. Do not add a frontend framework or documentation build chain without a concrete need.
+
+GitHub Actions publishes these surfaces with the official Pages configure/upload/deploy actions. GitHub Pages must use `Source: GitHub Actions`.
 
 ## Testing Expectations
 
@@ -147,18 +160,18 @@ Keep tests meaningful and behavior-focused:
 
 This repository is structurally stable. Prefer small, focused changes that preserve the current architecture.
 
-`README.md` is the concise project entry point. Detailed setup, runtime, testing, reporting, and troubleshooting instructions live in `docs/user-guide.md`.
+`README.md` is the concise repository entry point, the dashboard is the public landing page, and detailed setup, runtime, testing, reporting, and troubleshooting instructions live in the HTML pages under `docs/user-guide/`.
 
 * For backend behavior changes, update or add tests and run `mvn clean verify`.
 * For API behavior changes, update `src/main/resources/openapi/identity-api.yaml` first, then implementation, tests, README, user guide, and dashboard links if affected.
 * For Docker changes, run `docker compose config` and, when feasible, `docker compose up --build`.
-* For documentation-only changes, keep README, `docs/user-guide.md`, dashboard, Maven site references, and this guide consistent.
+* For documentation-only changes, keep README, `docs/user-guide/`, dashboard, Maven site references, workflow paths, and this guide consistent.
 * Do not add speculative abstractions, new frameworks, or machine-specific Codex configuration.
 * Prefer Spring Boot managed dependency versions unless a direct override is clearly justified and verified.
 
 ## Quality Bar
 
-Keep the project compact, production-style, and recruiter-friendly: clear API contract, thin controllers, tested business behavior, real PostgreSQL integration tests, validated Docker runtime, generated coverage, and working GitHub Pages documentation.
+Keep the project compact, production-style, and recruiter-friendly: clear API contract, thin controllers, tested business behavior, real PostgreSQL integration tests, validated Docker runtime, generated coverage, and a responsive, accessible GitHub Pages documentation portal.
 
 ## Do Not Edit Manually
 
@@ -183,4 +196,4 @@ Keep local and generated artifacts out of Git:
 * logs, temp files, local build artifacts
 * secrets or machine-specific configuration
 
-When changing behavior, update the OpenAPI contract, implementation, tests, README, user guide, dashboard, and this guide when they are affected.
+When changing behavior, update the OpenAPI contract, implementation, tests, README, HTML User Guide, dashboard, and this guide when they are affected.

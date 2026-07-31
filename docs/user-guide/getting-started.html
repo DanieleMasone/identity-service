@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Prerequisites and local startup instructions for the Identity Service API.">
+    <title>Getting Started | Identity Service User Guide</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="guide-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Identity Service dashboard"><span class="brand-mark" aria-hidden="true">ID</span><span>Identity Service API</span></a>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Documentation navigation">
+          <a href="../">Dashboard</a><a href="./">Guide home</a><a href="../openapi/">OpenAPI</a><a href="https://github.com/DanieleMasone/identity-service">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span>Dark mode</span><span class="theme-toggle-state">On</span></button>
+      </div>
+    </header>
+
+    <main id="main-content" class="guide-main" tabindex="-1">
+      <header class="guide-hero">
+        <p class="breadcrumb"><a href="../">Dashboard</a><span aria-hidden="true">/</span><a href="./">User Guide</a><span aria-hidden="true">/</span><span>Getting started</span></p>
+        <p class="eyebrow">Local development</p>
+        <h1>Getting started</h1>
+        <p class="guide-lead">Prepare Java and Docker, start PostgreSQL, run Spring Boot, and inspect the local API documentation.</p>
+      </header>
+
+      <div class="guide-layout">
+        <aside class="guide-sidebar">
+          <nav class="guide-nav" aria-label="User Guide sections">
+            <h2>Guide sections</h2>
+            <ul>
+              <li><a href="./">Overview</a></li><li><a href="getting-started.html" aria-current="page">Getting started</a></li>
+              <li><a href="docker.html">Docker usage</a></li><li><a href="api-documentation.html">API documentation</a></li>
+              <li><a href="testing.html">Testing</a></li><li><a href="coverage.html">Coverage</a></li>
+              <li><a href="ci-cd.html">CI/CD and generated docs</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li>
+            </ul>
+          </nav>
+        </aside>
+
+        <article class="guide-content">
+          <section>
+            <h2>Prerequisites</h2>
+            <div class="guide-table-wrap">
+              <table class="guide-table">
+                <thead><tr><th>Tool</th><th>Requirement</th><th>Purpose</th></tr></thead>
+                <tbody>
+                  <tr><td>Java</td><td>JDK 21</td><td>Compile and run the Spring Boot application.</td></tr>
+                  <tr><td>Maven</td><td>Maven 3.9+ or the included wrapper</td><td>Generate sources, test, package, and produce reports.</td></tr>
+                  <tr><td>Docker</td><td>Current Docker Desktop or Docker Engine</td><td>Run PostgreSQL, Testcontainers, and the complete Compose stack.</td></tr>
+                  <tr><td>Docker Compose</td><td>Compose v2 (<code>docker compose</code>)</td><td>Start the database and application together.</td></tr>
+                  <tr><td>Git</td><td>Current stable release</td><td>Clone and work with the repository.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Confirm the active toolchain before the first build:</p>
+            <div class="command-set">
+              <pre class="command-block"><code>java -version
+mvn -version
+docker version
+docker compose version</code></pre>
+            </div>
+            <div class="callout">
+              <p>The repository includes <code>mvnw</code> and <code>mvnw.cmd</code>. Replace <code>mvn</code> with <code>./mvnw</code> on Unix-like systems or <code>.\mvnw.cmd</code> on Windows when Maven is not installed globally.</p>
+            </div>
+          </section>
+
+          <section>
+            <h2>Clone and inspect the project</h2>
+            <pre class="command-block"><code>git clone https://github.com/DanieleMasone/identity-service.git
+cd identity-service</code></pre>
+            <p>The main source locations are:</p>
+            <ul>
+              <li><code>src/main/java</code>: handwritten application, domain, persistence, and infrastructure code.</li>
+              <li><code>src/main/resources/openapi</code>: the source OpenAPI contract.</li>
+              <li><code>src/main/resources/db/migration</code>: versioned Flyway migrations.</li>
+              <li><code>src/test/java</code>: unit, web-layer, repository, and integration tests.</li>
+              <li><code>docs</code>: source files for the static dashboard and this guide.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2>Configure the local environment</h2>
+            <p>The defaults are suitable for the repository's local PostgreSQL container:</p>
+            <div class="guide-table-wrap">
+              <table class="guide-table">
+                <thead><tr><th>Variable</th><th>Default</th><th>Used by</th></tr></thead>
+                <tbody>
+                  <tr><td><code>DB_USERNAME</code></td><td><code>postgres</code></td><td>Spring Boot and Docker Compose</td></tr>
+                  <tr><td><code>DB_PASSWORD</code></td><td><code>postgres</code></td><td>Spring Boot and Docker Compose</td></tr>
+                  <tr><td><code>SPRING_DATASOURCE_URL</code></td><td><code>jdbc:postgresql://localhost:5432/identity_db</code></td><td>Optional Spring Boot override</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Docker Compose reads an optional repository-root <code>.env</code> file. It is ignored by Git and must not contain shared or production credentials.</p>
+          </section>
+
+          <section>
+            <h2>Run locally with Maven</h2>
+            <p>Start PostgreSQL first, then launch the application in a second terminal:</p>
+            <div class="command-set">
+              <pre class="command-block"><code>docker compose up -d db</code></pre>
+              <pre class="command-block"><code>mvn spring-boot:run</code></pre>
+            </div>
+            <p>Flyway applies pending migrations during startup and Hibernate validates the resulting schema. The application listens on <code>http://localhost:8080/api</code>.</p>
+          </section>
+
+          <section>
+            <h2>Verify startup</h2>
+            <ol>
+              <li>Wait for the Spring Boot log to report that <code>IdentityServiceApplication</code> has started.</li>
+              <li>Open <a href="http://localhost:8080/api/swagger-ui.html">local Swagger UI</a>.</li>
+              <li>Use the documented v1 or v2 endpoints, or import the <a href="https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json">Postman collection</a>.</li>
+            </ol>
+            <div class="callout warning">
+              <p><strong>Local runtime only:</strong> Swagger UI requires the running Spring Boot application. The public GitHub Pages site exposes generated static <a href="../openapi/">OpenAPI documentation</a> instead.</p>
+            </div>
+          </section>
+
+          <nav class="page-nav" aria-label="Guide page navigation">
+            <a href="./"><small>Previous</small><strong>Overview</strong></a>
+            <a href="docker.html"><small>Next</small><strong>Docker usage</strong></a>
+          </nav>
+        </article>
+      </div>
+    </main>
+    <footer class="site-footer"><div class="guide-footer-links"><a href="../">Dashboard</a><a href="../openapi/">OpenAPI</a><a href="../coverage/">Coverage</a></div><span id="build-year">Identity Service User Guide.</span></footer>
+    <script src="../script.js"></script>
+  </body>
+</html>

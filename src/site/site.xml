@@ -12,6 +12,7 @@
         <menu name="Overview">
             <item name="Home" href="index.html"/>
             <item name="Dashboard" href="../"/>
+            <item name="User Guide" href="../user-guide/"/>
             <item name="OpenAPI Docs" href="../openapi/"/>
             <item name="Coverage" href="../coverage/"/>
             <item name="Source Code" href="https://github.com/DanieleMasone/identity-service"/>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="GitHub Actions verification, Docker validation, generated documentation, and GitHub Pages deployment for Identity Service.">
+    <title>CI/CD and Generated Docs | Identity Service User Guide</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="guide-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Identity Service dashboard"><span class="brand-mark" aria-hidden="true">ID</span><span>Identity Service API</span></a>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Documentation navigation"><a href="../">Dashboard</a><a href="./">Guide home</a><a href="../openapi/">OpenAPI</a><a href="https://github.com/DanieleMasone/identity-service">GitHub</a></nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span>Dark mode</span><span class="theme-toggle-state">On</span></button>
+      </div>
+    </header>
+
+    <main id="main-content" class="guide-main" tabindex="-1">
+      <header class="guide-hero">
+        <p class="breadcrumb"><a href="../">Dashboard</a><span aria-hidden="true">/</span><a href="./">User Guide</a><span aria-hidden="true">/</span><span>CI/CD and generated docs</span></p>
+        <p class="eyebrow">Automated delivery</p>
+        <h1>CI/CD and generated documentation</h1>
+        <p class="guide-lead">The same verification, Docker checks, and generated reports feed a predictable GitHub Pages deployment.</p>
+      </header>
+
+      <div class="guide-layout">
+        <aside class="guide-sidebar">
+          <nav class="guide-nav" aria-label="User Guide sections"><h2>Guide sections</h2><ul>
+            <li><a href="./">Overview</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="docker.html">Docker usage</a></li>
+            <li><a href="api-documentation.html">API documentation</a></li><li><a href="testing.html">Testing</a></li><li><a href="coverage.html">Coverage</a></li>
+            <li><a href="ci-cd.html" aria-current="page">CI/CD and generated docs</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li>
+          </ul></nav>
+        </aside>
+
+        <article class="guide-content">
+          <section>
+            <h2>Workflow triggers</h2>
+            <p>The <a href="https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml">Identity Service CI/CD workflow</a> runs for:</p>
+            <ul>
+              <li>pull requests targeting <code>master</code>;</li>
+              <li>pushes to <code>master</code>.</li>
+            </ul>
+            <p>Both event types execute project verification and Docker validation. Only a successful push to <code>master</code> assembles and deploys GitHub Pages; pull requests never deploy.</p>
+          </section>
+
+          <section>
+            <h2>Verification job</h2>
+            <ol>
+              <li>Check out the repository and configure Temurin Java 21 with Maven dependency caching.</li>
+              <li>Run <code>mvn -B -ntp clean verify</code>, including unit and Testcontainers integration tests.</li>
+              <li>Validate that JaCoCo and generated OpenAPI reports exist.</li>
+              <li>Validate the source User Guide pages required by the Pages artifact.</li>
+              <li>Run <code>docker compose config</code>.</li>
+              <li>Run <code>docker compose build app</code>.</li>
+            </ol>
+            <p>Any compilation, test, report-generation, documentation-source, Compose, or image-build failure stops the workflow.</p>
+          </section>
+
+          <section>
+            <h2>Pages assembly and deployment</h2>
+            <p>After verification succeeds on <code>master</code>, Maven generates the technical site and CI assembles an ignored <code>pages/</code> staging directory:</p>
+            <pre class="command-block"><code>pages/
+  index.html
+  styles.css
+  script.js
+  user-guide/
+  openapi/
+  coverage/
+  maven-site/</code></pre>
+            <p>The workflow validates the expected index files before uploading the artifact. It then uses the official <code>configure-pages</code>, <code>upload-pages-artifact</code>, and <code>deploy-pages</code> actions with deployment permissions isolated to the deploy job.</p>
+            <div class="callout"><p>Repository Settings must configure Pages with <strong>Source: GitHub Actions</strong>. A local commit does not update the public site until it is pushed to <code>master</code> and the workflow completes successfully.</p></div>
+          </section>
+
+          <section>
+            <h2>Generated documentation</h2>
+            <div class="guide-table-wrap"><table class="guide-table">
+              <thead><tr><th>Documentation</th><th>Local output</th><th>Published path</th></tr></thead>
+              <tbody>
+                <tr><td>OpenAPI HTML</td><td><code>target/openapi-docs</code></td><td><a href="../openapi/"><code>/openapi/</code></a></td></tr>
+                <tr><td>JaCoCo HTML</td><td><code>target/site/jacoco</code></td><td><a href="../coverage/"><code>/coverage/</code></a></td></tr>
+                <tr><td>Maven site</td><td><code>target/site</code></td><td><a href="../maven-site/"><code>/maven-site/</code></a></td></tr>
+                <tr><td>JavaDoc</td><td><code>target/site/apidocs</code></td><td><a href="../maven-site/apidocs/"><code>/maven-site/apidocs/</code></a></td></tr>
+              </tbody>
+            </table></div>
+            <p>Generate the Maven site locally after verification:</p>
+            <pre class="command-block"><code>mvn site</code></pre>
+          </section>
+
+          <section>
+            <h2>Source and generated ownership</h2>
+            <ul>
+              <li><strong>Edit:</strong> <code>docs/</code>, <code>src/site/</code>, OpenAPI YAML, mapper interfaces, and handwritten Java.</li>
+              <li><strong>Do not edit:</strong> generated OpenAPI code, MapStruct implementations, <code>target/openapi-docs</code>, <code>target/site</code>, or assembled <code>pages/</code>.</li>
+              <li><strong>Do not commit:</strong> <code>target/</code>, <code>pages/</code>, local environment files, logs, or IDE metadata.</li>
+            </ul>
+            <p>The HTML User Guide is direct source under <code>docs/user-guide/</code>; it is intentionally not generated from Markdown and is reviewed like the dashboard.</p>
+          </section>
+
+          <nav class="page-nav" aria-label="Guide page navigation">
+            <a href="coverage.html"><small>Previous</small><strong>Coverage</strong></a>
+            <a href="troubleshooting.html"><small>Next</small><strong>Troubleshooting</strong></a>
+          </nav>
+        </article>
+      </div>
+    </main>
+    <footer class="site-footer"><div class="guide-footer-links"><a href="../">Dashboard</a><a href="../openapi/">OpenAPI</a><a href="../coverage/">Coverage</a></div><span id="build-year">Identity Service User Guide.</span></footer>
+    <script src="../script.js"></script>
+  </body>
+</html>

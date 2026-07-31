@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Docker Compose runtime and lifecycle guidance for the Identity Service API.">
+    <title>Docker Usage | Identity Service User Guide</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="guide-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Identity Service dashboard"><span class="brand-mark" aria-hidden="true">ID</span><span>Identity Service API</span></a>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Documentation navigation"><a href="../">Dashboard</a><a href="./">Guide home</a><a href="../openapi/">OpenAPI</a><a href="https://github.com/DanieleMasone/identity-service">GitHub</a></nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span>Dark mode</span><span class="theme-toggle-state">On</span></button>
+      </div>
+    </header>
+
+    <main id="main-content" class="guide-main" tabindex="-1">
+      <header class="guide-hero">
+        <p class="breadcrumb"><a href="../">Dashboard</a><span aria-hidden="true">/</span><a href="./">User Guide</a><span aria-hidden="true">/</span><span>Docker usage</span></p>
+        <p class="eyebrow">Container runtime</p>
+        <h1>Docker usage</h1>
+        <p class="guide-lead">Start the complete application stack, understand readiness behavior, and manage the local containers deliberately.</p>
+      </header>
+
+      <div class="guide-layout">
+        <aside class="guide-sidebar">
+          <nav class="guide-nav" aria-label="User Guide sections"><h2>Guide sections</h2><ul>
+            <li><a href="./">Overview</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="docker.html" aria-current="page">Docker usage</a></li>
+            <li><a href="api-documentation.html">API documentation</a></li><li><a href="testing.html">Testing</a></li><li><a href="coverage.html">Coverage</a></li>
+            <li><a href="ci-cd.html">CI/CD and generated docs</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li>
+          </ul></nav>
+        </aside>
+
+        <article class="guide-content">
+          <section>
+            <h2>Start the complete stack</h2>
+            <pre class="command-block"><code>docker compose up --build</code></pre>
+            <p>This command builds the Java application image and starts two services:</p>
+            <ul>
+              <li><strong><code>db</code>:</strong> PostgreSQL 16 on host port <code>5432</code>, database <code>identity_db</code>.</li>
+              <li><strong><code>app</code>:</strong> the packaged Spring Boot service on host port <code>8080</code>.</li>
+            </ul>
+            <p>Use detached mode when terminal logs are not needed continuously:</p>
+            <pre class="command-block"><code>docker compose up --build -d</code></pre>
+          </section>
+
+          <section>
+            <h2>Readiness and startup order</h2>
+            <p>The database health check runs <code>pg_isready</code> against <code>identity_db</code>. Compose starts the application only after PostgreSQL reports healthy through <code>depends_on.condition: service_healthy</code>.</p>
+            <p>After the application starts, Flyway applies migrations and Hibernate validates the schema. Inspect state and logs with:</p>
+            <div class="command-set">
+              <pre class="command-block"><code>docker compose ps</code></pre>
+              <pre class="command-block"><code>docker compose logs -f db
+docker compose logs -f app</code></pre>
+            </div>
+          </section>
+
+          <section>
+            <h2>Environment variables</h2>
+            <div class="guide-table-wrap"><table class="guide-table">
+              <thead><tr><th>Variable</th><th>Default</th><th>Effect</th></tr></thead>
+              <tbody>
+                <tr><td><code>DB_USERNAME</code></td><td><code>postgres</code></td><td>Configures the PostgreSQL user and the application's datasource username.</td></tr>
+                <tr><td><code>DB_PASSWORD</code></td><td><code>postgres</code></td><td>Configures the PostgreSQL password and the application's datasource password.</td></tr>
+              </tbody>
+            </table></div>
+            <p>Compose injects <code>jdbc:postgresql://db:5432/identity_db</code> into the application. The hostname is the Compose service name, so it differs from the <code>localhost</code> URL used by a Maven development run.</p>
+            <div class="callout warning"><p>The defaults are local development credentials. Use environment-specific secret management outside this portfolio Compose file for any real deployment.</p></div>
+          </section>
+
+          <section>
+            <h2>Stop and clean up</h2>
+            <p>Stop containers while keeping them available for a later restart:</p>
+            <div class="command-set">
+              <pre class="command-block"><code>docker compose stop</code></pre>
+              <pre class="command-block"><code>docker compose start</code></pre>
+            </div>
+            <p>Remove the containers and Compose network:</p>
+            <pre class="command-block"><code>docker compose down</code></pre>
+            <div class="callout warning"><p>The current Compose file does not define a persistent database volume. Removing the database container also removes its local database state.</p></div>
+          </section>
+
+          <section>
+            <h2>Common Docker checks</h2>
+            <ul>
+              <li>Run <code>docker compose config</code> to validate interpolation and structure.</li>
+              <li>Run <code>docker compose build app</code> to validate the application image without starting services.</li>
+              <li>Check that ports <code>5432</code> and <code>8080</code> are free before startup.</li>
+              <li>Use <code>docker compose logs</code> before rebuilding repeatedly; migration or credential errors are usually visible there.</li>
+            </ul>
+            <p>See <a href="troubleshooting.html">Troubleshooting</a> for daemon, port, Flyway, and startup failures.</p>
+          </section>
+
+          <nav class="page-nav" aria-label="Guide page navigation">
+            <a href="getting-started.html"><small>Previous</small><strong>Getting started</strong></a>
+            <a href="api-documentation.html"><small>Next</small><strong>API documentation</strong></a>
+          </nav>
+        </article>
+      </div>
+    </main>
+    <footer class="site-footer"><div class="guide-footer-links"><a href="../">Dashboard</a><a href="../openapi/">OpenAPI</a><a href="../coverage/">Coverage</a></div><span id="build-year">Identity Service User Guide.</span></footer>
+    <script src="../script.js"></script>
+  </body>
+</html>

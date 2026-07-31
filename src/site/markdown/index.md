@@ -41,6 +41,7 @@ published under `/maven-site/`.
 * [Postman collection](https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json)
 * [CI/CD workflow](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml)
 * [Public dashboard](../)
+* [HTML User Guide](../user-guide/)
 
 ## Local API Documentation
 

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="JaCoCo coverage generation, publication, exclusions, and interpretation for Identity Service.">
+    <title>Coverage | Identity Service User Guide</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="guide-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Identity Service dashboard"><span class="brand-mark" aria-hidden="true">ID</span><span>Identity Service API</span></a>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Documentation navigation"><a href="../">Dashboard</a><a href="./">Guide home</a><a href="../openapi/">OpenAPI</a><a href="https://github.com/DanieleMasone/identity-service">GitHub</a></nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span>Dark mode</span><span class="theme-toggle-state">On</span></button>
+      </div>
+    </header>
+
+    <main id="main-content" class="guide-main" tabindex="-1">
+      <header class="guide-hero">
+        <p class="breadcrumb"><a href="../">Dashboard</a><span aria-hidden="true">/</span><a href="./">User Guide</a><span aria-hidden="true">/</span><span>Coverage</span></p>
+        <p class="eyebrow">JaCoCo reports</p>
+        <h1>Coverage</h1>
+        <p class="guide-lead">Generate the report with the normal verification lifecycle and use it as evidence alongside behavior-focused tests.</p>
+      </header>
+
+      <div class="guide-layout">
+        <aside class="guide-sidebar">
+          <nav class="guide-nav" aria-label="User Guide sections"><h2>Guide sections</h2><ul>
+            <li><a href="./">Overview</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="docker.html">Docker usage</a></li>
+            <li><a href="api-documentation.html">API documentation</a></li><li><a href="testing.html">Testing</a></li><li><a href="coverage.html" aria-current="page">Coverage</a></li>
+            <li><a href="ci-cd.html">CI/CD and generated docs</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li>
+          </ul></nav>
+        </aside>
+
+        <article class="guide-content">
+          <section>
+            <h2>Generate coverage</h2>
+            <pre class="command-block"><code>mvn clean verify</code></pre>
+            <p>The JaCoCo agent records both unit and integration test execution. Its report goal runs in Maven's <code>verify</code> phase, after the complete test suite.</p>
+            <div class="callout"><p>Coverage is part of the real validation command. There is no separate skipped-test documentation build that can produce a misleading report.</p></div>
+          </section>
+
+          <section>
+            <h2>Local output</h2>
+            <div class="guide-table-wrap"><table class="guide-table">
+              <thead><tr><th>Report</th><th>Path</th><th>Use</th></tr></thead>
+              <tbody>
+                <tr><td>HTML</td><td><code>target/site/jacoco/index.html</code></td><td>Browse package, class, method, branch, and line coverage locally.</td></tr>
+                <tr><td>XML</td><td><code>target/site/jacoco/jacoco.xml</code></td><td>Machine-readable output validated by CI and available to future reporting integrations.</td></tr>
+              </tbody>
+            </table></div>
+            <p>Open the HTML file directly in a browser after verification. All files under <code>target/</code> are generated and must not be committed.</p>
+          </section>
+
+          <section>
+            <h2>Published report</h2>
+            <p>On a successful push to <code>master</code>, GitHub Actions copies the HTML report into the Pages artifact under <code>/coverage/</code>.</p>
+            <p><a class="button primary" href="../coverage/">Open published coverage report</a></p>
+            <p>The dashboard and README link to this canonical report. No percentage badge is shown because the repository does not publish an automatically maintained badge metric.</p>
+          </section>
+
+          <section>
+            <h2>Excluded generated code</h2>
+            <p>The report excludes code that is produced mechanically and is not owned as handwritten application behavior:</p>
+            <ul>
+              <li>OpenAPI-generated interfaces and models under <code>com/dmasone/identity/api/generated/**</code>.</li>
+              <li>Generated MapStruct implementation classes matching <code>*MapperImpl*</code>.</li>
+            </ul>
+            <p>The mapper interface and handwritten controllers, services, domain model, repositories, and exception handling remain visible where applicable.</p>
+          </section>
+
+          <section>
+            <h2>Interpret the report</h2>
+            <ul>
+              <li><strong>Instruction and line coverage</strong> reveal unexecuted implementation paths.</li>
+              <li><strong>Branch coverage</strong> is particularly useful for validation, update, and error decisions.</li>
+              <li><strong>Class and method coverage</strong> can identify production components absent from the suite.</li>
+            </ul>
+            <p>Coverage is diagnostic evidence, not a substitute for assertions or realistic integration tests. The project does not enforce an arbitrary percentage threshold; changes should add tests where behavior and risk justify them.</p>
+          </section>
+
+          <nav class="page-nav" aria-label="Guide page navigation">
+            <a href="testing.html"><small>Previous</small><strong>Testing</strong></a>
+            <a href="ci-cd.html"><small>Next</small><strong>CI/CD and generated docs</strong></a>
+          </nav>
+        </article>
+      </div>
+    </main>
+    <footer class="site-footer"><div class="guide-footer-links"><a href="../">Dashboard</a><a href="../openapi/">OpenAPI</a><a href="../coverage/">Coverage</a></div><span id="build-year">Identity Service User Guide.</span></footer>
+    <script src="../script.js"></script>
+  </body>
+</html>

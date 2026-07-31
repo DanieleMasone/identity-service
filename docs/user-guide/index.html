@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Identity Service User Guide: architecture, local development, Docker, API documentation, testing, coverage, and CI/CD.">
+    <title>User Guide | Identity Service API</title>
+    <script>
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark";
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="guide-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Identity Service dashboard">
+        <span class="brand-mark" aria-hidden="true">ID</span>
+        <span>Identity Service API</span>
+      </a>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Documentation navigation">
+          <a href="../">Dashboard</a>
+          <a href="./" aria-current="page">Guide home</a>
+          <a href="../openapi/">OpenAPI</a>
+          <a href="https://github.com/DanieleMasone/identity-service">GitHub</a>
+        </nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true">
+          <span>Dark mode</span>
+          <span class="theme-toggle-state">On</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main-content" class="guide-main" tabindex="-1">
+      <header class="guide-hero">
+        <p class="breadcrumb"><a href="../">Dashboard</a><span aria-hidden="true">/</span><span>User Guide</span></p>
+        <p class="eyebrow">Identity Service documentation</p>
+        <h1>User Guide</h1>
+        <p class="guide-lead">
+          Practical guidance for running, testing, inspecting, and maintaining the Identity Service
+          locally and through its GitHub Actions delivery pipeline.
+        </p>
+      </header>
+
+      <div class="guide-layout">
+        <aside class="guide-sidebar">
+          <nav class="guide-nav" aria-label="User Guide sections">
+            <h2>Guide sections</h2>
+            <ul>
+              <li><a href="./" aria-current="page">Overview</a></li>
+              <li><a href="getting-started.html">Getting started</a></li>
+              <li><a href="docker.html">Docker usage</a></li>
+              <li><a href="api-documentation.html">API documentation</a></li>
+              <li><a href="testing.html">Testing</a></li>
+              <li><a href="coverage.html">Coverage</a></li>
+              <li><a href="ci-cd.html">CI/CD and generated docs</a></li>
+              <li><a href="troubleshooting.html">Troubleshooting</a></li>
+            </ul>
+          </nav>
+        </aside>
+
+        <article class="guide-content">
+          <section>
+            <h2>Project overview</h2>
+            <p>
+              Identity Service API is a compact Java 21 and Spring Boot 4 backend for user identity
+              management. It demonstrates API versioning, password hashing, soft deletion, database
+              migrations, consistent HTTP errors, real PostgreSQL integration tests, containerized
+              startup, and automated documentation publication.
+            </p>
+            <p>
+              The project is intentionally scoped as one service. It does not introduce authentication
+              tokens, distributed messaging, Kubernetes, or a browser application because those concerns
+              are outside the current OpenAPI contract.
+            </p>
+            <div class="guide-summary-grid">
+              <article class="guide-card">
+                <h3>Runtime</h3>
+                <p>Java 21, Spring Boot 4, Spring MVC, Spring Data JPA, and PostgreSQL 16.</p>
+              </article>
+              <article class="guide-card">
+                <h3>Contract and mapping</h3>
+                <p>OpenAPI Generator produces HTTP models and interfaces; MapStruct maps them to the domain.</p>
+              </article>
+              <article class="guide-card">
+                <h3>Database lifecycle</h3>
+                <p>Flyway migrations create and evolve the schema before Hibernate validates it.</p>
+              </article>
+              <article class="guide-card">
+                <h3>Quality and delivery</h3>
+                <p>JUnit, MockMvc, Testcontainers, JaCoCo, Docker Compose, and GitHub Actions form the validation path.</p>
+              </article>
+            </div>
+          </section>
+
+          <section>
+            <h2>Architecture summary</h2>
+            <ol>
+              <li><strong>OpenAPI contract:</strong> <code>identity-api.yaml</code> defines the public API.</li>
+              <li><strong>Generated API layer:</strong> Maven generates Spring MVC interfaces and API models.</li>
+              <li><strong>Controllers:</strong> thin adapters implement the generated interfaces.</li>
+              <li><strong>Services:</strong> application logic owns validation, hashing, updates, and soft deletes.</li>
+              <li><strong>Domain and mapping:</strong> internal entities remain separate from generated API models.</li>
+              <li><strong>Repositories:</strong> Spring Data JPA persists the domain model in PostgreSQL.</li>
+            </ol>
+            <div class="callout">
+              <p>
+                <strong>API-first rule:</strong> change the YAML contract before changing public HTTP behavior,
+                then regenerate through Maven and update implementation and tests.
+              </p>
+            </div>
+          </section>
+
+          <section>
+            <h2>Guide map</h2>
+            <div class="guide-summary-grid">
+              <article class="guide-card"><h3><a href="getting-started.html">Getting started</a></h3><p>Prerequisites, cloning, local database startup, application launch, and first checks.</p></article>
+              <article class="guide-card"><h3><a href="docker.html">Docker usage</a></h3><p>Compose runtime, health checks, environment variables, shutdown, and cleanup.</p></article>
+              <article class="guide-card"><h3><a href="api-documentation.html">API documentation</a></h3><p>Source contract, generated docs, local Swagger UI, versioning, Postman, and generated code.</p></article>
+              <article class="guide-card"><h3><a href="testing.html">Testing</a></h3><p>Unit, web-layer, repository, and Testcontainers integration verification.</p></article>
+              <article class="guide-card"><h3><a href="coverage.html">Coverage</a></h3><p>JaCoCo generation, local and published reports, exclusions, and interpretation.</p></article>
+              <article class="guide-card"><h3><a href="ci-cd.html">CI/CD and generated docs</a></h3><p>Pull-request gates, Docker checks, Maven site generation, and Pages deployment.</p></article>
+            </div>
+          </section>
+
+          <section>
+            <h2>Useful links</h2>
+            <ul class="resource-list">
+              <li><a href="../">Project dashboard</a></li>
+              <li><a href="https://github.com/DanieleMasone/identity-service">GitHub repository</a></li>
+              <li><a href="https://github.com/DanieleMasone/identity-service#readme">README</a></li>
+              <li><a href="../openapi/">Generated OpenAPI documentation</a></li>
+              <li><a href="https://github.com/DanieleMasone/identity-service/blob/master/src/main/resources/openapi/identity-api.yaml">OpenAPI YAML contract</a></li>
+              <li><a href="https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json">Postman collection</a></li>
+              <li><a href="../coverage/">JaCoCo coverage</a></li>
+              <li><a href="../maven-site/">Maven site and JavaDoc</a></li>
+              <li><a href="https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml">GitHub Actions</a></li>
+              <li><a href="https://github.com/DanieleMasone/identity-service/blob/master/LICENSE">MIT License</a></li>
+            </ul>
+          </section>
+
+          <nav class="page-nav" aria-label="Guide page navigation">
+            <a href="../"><small>Back to</small><strong>Project dashboard</strong></a>
+            <a href="getting-started.html"><small>Next</small><strong>Getting started</strong></a>
+          </nav>
+        </article>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="guide-footer-links"><a href="../">Dashboard</a><a href="../openapi/">OpenAPI</a><a href="../coverage/">Coverage</a></div>
+      <span id="build-year">Identity Service User Guide.</span>
+    </footer>
+    <script src="../script.js"></script>
+  </body>
+</html>

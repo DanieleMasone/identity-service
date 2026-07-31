@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="OpenAPI contract, generated documentation, Swagger UI, versioning, and generated code ownership for Identity Service.">
+    <title>API Documentation | Identity Service User Guide</title>
+    <script>
+      try { document.documentElement.dataset.theme = localStorage.getItem("identity-service-theme") || "dark"; }
+      catch { document.documentElement.dataset.theme = "dark"; }
+    </script>
+    <link rel="stylesheet" href="../styles.css">
+  </head>
+  <body class="guide-page">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="Identity Service dashboard"><span class="brand-mark" aria-hidden="true">ID</span><span>Identity Service API</span></a>
+      <div class="header-actions">
+        <nav class="nav-links" aria-label="Documentation navigation"><a href="../">Dashboard</a><a href="./">Guide home</a><a href="../openapi/">OpenAPI</a><a href="https://github.com/DanieleMasone/identity-service">GitHub</a></nav>
+        <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="true"><span>Dark mode</span><span class="theme-toggle-state">On</span></button>
+      </div>
+    </header>
+
+    <main id="main-content" class="guide-main" tabindex="-1">
+      <header class="guide-hero">
+        <p class="breadcrumb"><a href="../">Dashboard</a><span aria-hidden="true">/</span><a href="./">User Guide</a><span aria-hidden="true">/</span><span>API documentation</span></p>
+        <p class="eyebrow">Contract-first API</p>
+        <h1>API documentation</h1>
+        <p class="guide-lead">Understand the source contract, public static documentation, local Swagger UI, versioning, and generated-code boundaries.</p>
+      </header>
+
+      <div class="guide-layout">
+        <aside class="guide-sidebar">
+          <nav class="guide-nav" aria-label="User Guide sections"><h2>Guide sections</h2><ul>
+            <li><a href="./">Overview</a></li><li><a href="getting-started.html">Getting started</a></li><li><a href="docker.html">Docker usage</a></li>
+            <li><a href="api-documentation.html" aria-current="page">API documentation</a></li><li><a href="testing.html">Testing</a></li><li><a href="coverage.html">Coverage</a></li>
+            <li><a href="ci-cd.html">CI/CD and generated docs</a></li><li><a href="troubleshooting.html">Troubleshooting</a></li>
+          </ul></nav>
+        </aside>
+
+        <article class="guide-content">
+          <section>
+            <h2>Source of truth</h2>
+            <p>The public HTTP contract is maintained in:</p>
+            <pre class="command-block"><code>src/main/resources/openapi/identity-api.yaml</code></pre>
+            <p>Change this YAML first when an endpoint, schema, status code, or validation rule changes. Maven then generates the Spring MVC interfaces, API models, and static HTML reference from the same contract.</p>
+            <div class="callout"><p><strong>Ownership rule:</strong> edit the YAML and handwritten implementations. Never patch a generated interface, model, MapStruct implementation, or generated HTML report.</p></div>
+          </section>
+
+          <section>
+            <h2>Static public API reference</h2>
+            <p>The OpenAPI Generator Maven plugin uses the <code>html2</code> generator during <code>generate-sources</code>. Local output is written to:</p>
+            <pre class="command-block"><code>target/openapi-docs/index.html</code></pre>
+            <p>GitHub Actions publishes that output as the public, runtime-independent API reference:</p>
+            <p><a class="button primary" href="../openapi/">Open generated OpenAPI documentation</a></p>
+            <p>GitHub Pages serves static files only. It does not run Spring Boot or proxy requests to a local backend.</p>
+          </section>
+
+          <section>
+            <h2>Local Swagger UI</h2>
+            <p>When the application is running, springdoc exposes an interactive local UI at:</p>
+            <pre class="command-block"><code>http://localhost:8080/api/swagger-ui.html</code></pre>
+            <p><a href="http://localhost:8080/api/swagger-ui.html">Open local Swagger UI</a>. The link works only on the machine where Identity Service is running on port <code>8080</code>.</p>
+          </section>
+
+          <section>
+            <h2>API versions</h2>
+            <div class="guide-table-wrap"><table class="guide-table">
+              <thead><tr><th>Version</th><th>Operations</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><code>v1</code></td><td><code>POST /api/v1/users</code><br><code>GET /api/v1/users/{id}</code><br><code>DELETE /api/v1/users/{id}</code></td><td>Minimal user creation, retrieval, and soft deletion.</td></tr>
+                <tr><td><code>v2</code></td><td><code>POST /api/v2/users</code><br><code>GET /api/v2/users/{id}</code><br><code>PATCH /api/v2/users/{id}</code></td><td>Profile fields and partial updates while preserving v1.</td></tr>
+              </tbody>
+            </table></div>
+            <p>Errors use RFC 7807 <code>ProblemDetail</code> responses for validation failures, conflicts, and missing resources.</p>
+          </section>
+
+          <section>
+            <h2>Postman collection</h2>
+            <p>Import the repository collection to exercise the documented operations against a local runtime:</p>
+            <pre class="command-block"><code>postman/identity-service.postman_collection.json</code></pre>
+            <p><a href="https://github.com/DanieleMasone/identity-service/blob/master/postman/identity-service.postman_collection.json">View the Postman collection on GitHub</a>.</p>
+          </section>
+
+          <section>
+            <h2>Generated code lifecycle</h2>
+            <div class="guide-table-wrap"><table class="guide-table">
+              <thead><tr><th>Output</th><th>Location</th><th>Generated by</th></tr></thead>
+              <tbody>
+                <tr><td>Spring MVC interfaces and API models</td><td><code>target/generated-sources/openapi</code></td><td>OpenAPI Generator</td></tr>
+                <tr><td>MapStruct mapper implementation</td><td><code>target/generated-sources/annotations</code></td><td>Java annotation processing</td></tr>
+                <tr><td>Static OpenAPI HTML</td><td><code>target/openapi-docs</code></td><td>OpenAPI Generator <code>html2</code></td></tr>
+              </tbody>
+            </table></div>
+            <p>Regenerate cleanly with:</p>
+            <pre class="command-block"><code>mvn clean compile</code></pre>
+            <p>All outputs live under <code>target/</code>, are ignored by Git, and are reproducible from source.</p>
+          </section>
+
+          <nav class="page-nav" aria-label="Guide page navigation">
+            <a href="docker.html"><small>Previous</small><strong>Docker usage</strong></a>
+            <a href="testing.html"><small>Next</small><strong>Testing</strong></a>
+          </nav>
+        </article>
+      </div>
+    </main>
+    <footer class="site-footer"><div class="guide-footer-links"><a href="../">Dashboard</a><a href="../openapi/">OpenAPI</a><a href="../coverage/">Coverage</a></div><span id="build-year">Identity Service User Guide.</span></footer>
+    <script src="../script.js"></script>
+  </body>
+</html>
