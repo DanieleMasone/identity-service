@@ -1,9 +1,8 @@
 # Identity Service API
 
 [![CI/CD](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/DanieleMasone/identity-service/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Dashboard](https://img.shields.io/badge/dashboard-GitHub%20Pages-222222.svg)](https://danielemasone.github.io/identity-service/)
-[![User Guide](https://img.shields.io/badge/docs-User%20Guide-087568.svg)](https://danielemasone.github.io/identity-service/user-guide/)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fdanielemasone.github.io%2Fidentity-service%2Fbadges%2Fcoverage.json)](https://danielemasone.github.io/identity-service/coverage/)
+[![License](https://img.shields.io/github/license/DanieleMasone/identity-service)](LICENSE)
 
 Production-style backend service for user identity management, built with Java 21, Spring Boot 4, PostgreSQL, Flyway, OpenAPI Generator, MapStruct, Testcontainers, Docker Compose and GitHub Actions.
 

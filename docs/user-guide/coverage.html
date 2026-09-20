@@ -60,9 +60,9 @@
 
           <section>
             <h2>Published report</h2>
-            <p>On a successful push to <code>master</code>, GitHub Actions copies the HTML report into the Pages artifact under <code>/coverage/</code>.</p>
+            <p>On a successful push to <code>master</code>, GitHub Actions copies the HTML report into the Pages artifact under <code>/coverage/</code> and publishes the calculated line-coverage badge metadata at <code>/badges/coverage.json</code>.</p>
             <p><a class="button primary" href="../coverage/">Open published coverage report</a></p>
-            <p>The dashboard and README link to this canonical report. No percentage badge is shown because the repository does not publish an automatically maintained badge metric.</p>
+            <p>The dashboard and README link to this canonical report. The README coverage badge reads the generated metadata rather than a manually maintained percentage.</p>
           </section>
 
           <section>

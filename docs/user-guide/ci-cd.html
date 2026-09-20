@@ -72,6 +72,8 @@
   user-guide/
   openapi/
   coverage/
+  badges/
+    coverage.json
   maven-site/</code></pre>
             <p>The workflow validates the expected index files before uploading the artifact. It then uses the official <code>configure-pages</code>, <code>upload-pages-artifact</code>, and <code>deploy-pages</code> actions with deployment permissions isolated to the deploy job.</p>
             <div class="callout"><p>Repository Settings must configure Pages with <strong>Source: GitHub Actions</strong>. A local commit does not update the public site until it is pushed to <code>master</code> and the workflow completes successfully.</p></div>

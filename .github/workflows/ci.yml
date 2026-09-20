@@ -53,13 +53,24 @@ jobs:
         shell: bash
         run: |
           rm -rf pages
-          mkdir -p pages/openapi pages/maven-site pages/coverage
+          mkdir -p pages/openapi pages/maven-site pages/coverage pages/badges
           cp -R docs/. pages/
           cp -R target/openapi-docs/. pages/openapi/
           rm -rf pages/openapi/.openapi-generator pages/openapi/.openapi-generator-ignore
           cp -R target/site/. pages/maven-site/
           rm -rf pages/maven-site/jacoco
           cp -R target/site/jacoco/. pages/coverage/
+          set -o pipefail
+          line_counter=$(grep -o '<counter type="LINE"[^>]*/>' target/site/jacoco/jacoco.xml | tail -n 1)
+          covered=$(sed -n 's/.*covered="\([0-9]*\)".*/\1/p' <<< "$line_counter")
+          missed=$(sed -n 's/.*missed="\([0-9]*\)".*/\1/p' <<< "$line_counter")
+          test -n "$covered"
+          test -n "$missed"
+          total=$((covered + missed))
+          test "$total" -gt 0
+          coverage=$(awk -v covered="$covered" -v total="$total" 'BEGIN { printf "%.2f", (covered * 100) / total }')
+          color=$(awk -v coverage="$coverage" 'BEGIN { if (coverage >= 90) print "brightgreen"; else if (coverage >= 80) print "green"; else if (coverage >= 70) print "yellow"; else print "red" }')
+          printf '{\n  "schemaVersion": 1,\n  "label": "coverage",\n  "message": "%s%%",\n  "color": "%s"\n}\n' "$coverage" "$color" > pages/badges/coverage.json
           test -f pages/index.html
           required_guide_pages=(index.html getting-started.html docker.html api-documentation.html testing.html coverage.html ci-cd.html troubleshooting.html)
           for page in "${required_guide_pages[@]}"; do
@@ -68,6 +79,7 @@ jobs:
           test -f pages/openapi/index.html
           test -f pages/coverage/index.html
           test -f pages/maven-site/index.html
+          test -f pages/badges/coverage.json
 
       - name: Configure GitHub Pages
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'

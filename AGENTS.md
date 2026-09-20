@@ -141,6 +141,7 @@ docs/user-guide/*.html           public User Guide source (/user-guide/)
 target/openapi-docs              generated OpenAPI HTML (/openapi/)
 target/site/jacoco               generated coverage (/coverage/)
 target/site                      generated Maven site (/maven-site/)
+pages/badges/coverage.json       generated Shields metadata (/badges/coverage.json)
 ```
 
 The dashboard and User Guide are direct static HTML sources and reuse `docs/styles.css` and `docs/script.js`. Keep them responsive, keyboard accessible, and usable without JavaScript for content or navigation. Do not add a frontend framework or documentation build chain without a concrete need.
